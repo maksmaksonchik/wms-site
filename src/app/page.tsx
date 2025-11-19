@@ -1,6 +1,10 @@
+import Header from "@/components/header";
+
 const Home = () => {
   return (
-    <div>Привет, ЗМШ!</div>
+    <>
+      <Header />
+    </>
   );
 };
 
