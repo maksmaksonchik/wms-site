@@ -16,7 +16,7 @@ const navLinks = [
   { id: "program", label: "Расписание" },
   { id: "members", label: "Участники" },
   { id: "sponsors", label: "Спонсоры" },
-  { id: "route", label: "Как добраться" },
+  { id: "directions", label: "Как добраться" },
   { id: "merch", label: "Мерч" },
   { id: "past", label: "Прошлые школы" },
 ];
