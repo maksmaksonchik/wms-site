@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import { ThemeToggle } from "./theme-toggle";
+import { siteConfig } from "@/config/site.config";
 
 const navLinks = [
   { id: "program", label: "Расписание" },
@@ -27,16 +28,17 @@ const Header = () => {
       <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-4 sm:gap-8 sm:px-10 lg:px-16">
         <Link
           href="#hero"
-          className="flex items-center gap-2 transition hover:text-primary"
+          className="flex items-center gap-2 transition hover:text-primary text-lg font-semibold tracking-tight"
         >
           <Image
-            src="/logo.svg"
+            src={siteConfig.logo}
             alt="Логотип"
-            width={26}
-            height={26}
+            width={24}
+            height={24}
+            className="w-[1.5em] h-[1.5em]"
             priority
           />
-          <span className="text-lg font-semibold tracking-tight">ЗМШ</span>
+          <span>{siteConfig.title}</span>
         </Link>
 
         <NavigationMenu className="mx-auto">
