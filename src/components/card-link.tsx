@@ -17,7 +17,11 @@ const CardLink = ({ href, label, description }: Props) => {
             {label}
             <ArrowUpRight className="h-[1em] w-[1em] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </CardTitle>
-          <CardDescription className="text-base">{description}</CardDescription>
+          {description && (
+            <CardDescription className="text-base">
+              {description}
+            </CardDescription>
+          )}
         </CardHeader>
       </Card>
     </a>
