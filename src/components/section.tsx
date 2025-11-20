@@ -16,8 +16,8 @@ const Section = ({ id, title, description, badge, children }: Props) => {
     >
       <div className="space-y-3 max-w-3xl">
         <Badge variant="secondary">{badge}</Badge>
-        <h2 className="text-3xl font-semibold sm:text-4xl">{title}</h2>
-        <p className="text-lg text-muted-foreground">{description}</p>
+        <h2 className="text-2xl font-semibold sm:text-3xl">{title}</h2>
+        <p className="text-lg text-muted-foreground ">{description}</p>
       </div>
       {children}
     </section>

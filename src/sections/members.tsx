@@ -1,4 +1,5 @@
 import CallToAction from "@/components/call-to-action";
+import CardLink from "@/components/card-link";
 import Section from "@/components/section";
 
 const content = {
@@ -6,6 +7,11 @@ const content = {
   title: "Стать участником",
   description: "МЕСТА ЗАКОНЧИЛИСЬ.",
   badge: "Участники",
+};
+
+const link = {
+  label: "Кто едет?",
+  href: "https://buildin.ai/share/696d3aee-85e7-4e62-b004-cdf6a4013eba",
 };
 
 const callToActionContent = {
@@ -21,6 +27,11 @@ const Members = () => {
 
   return (
     <Section id={id} badge={badge} title={title} description={description}>
+      <CardLink
+        href={link.href}
+        label={link.label}
+        description="Список ЗМШат 2026"
+      />
       <CallToAction
         title={callToActionContent.title}
         description={callToActionContent.description}

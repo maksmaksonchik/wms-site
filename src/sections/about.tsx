@@ -1,10 +1,7 @@
+import CardLink from "@/components/card-link";
+import CardsGrid from "@/components/cards-grid";
 import Section from "@/components/section";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { siteConfig } from "@/config/site.config";
 
 const content = {
   id: "about",
@@ -12,30 +9,35 @@ const content = {
   description:
     "ЗМШ — мультидисциплинарный лекторий для математиков, программистов и сочувствующих единомышленников.",
   badge: "О нас",
-  stats: [
-    { value: "200+", label: "ЗМШат ежегодно" },
-    { value: "8", label: "дней с друзьями" },
-    { value: "30+", label: "лекторов" },
+  links: [
+    {
+      label: "Телеграм-канал школы",
+      href: siteConfig.footerLink.href,
+      description: "Новости ЗМШ",
+    },
+    {
+      label: "Правила ЗМШ",
+      href: "https://buildin.ai/share/6c9cfa4b-33f1-4554-88e5-dad27ce7941b",
+      description: "Что нужно знать перед поездкой",
+    },
   ],
 };
 
 const About = () => {
-  const { id, title, description, badge } = content;
+  const { id, title, description, badge, links } = content;
 
   return (
     <Section id={id} title={title} badge={badge} description={description}>
-      <div className="grid gap-6 md:grid-cols-3">
-        {content.stats.map((stat) => (
-          <Card key={stat.label} className="border-muted">
-            <CardHeader>
-              <CardTitle className="text-4xl font-semibold">
-                {stat.value}
-              </CardTitle>
-              <CardDescription>{stat.label}</CardDescription>
-            </CardHeader>
-          </Card>
+      <CardsGrid>
+        {links.map((stat) => (
+          <CardLink
+            key={stat.href}
+            href={stat.href}
+            label={stat.label}
+            description={stat.description}
+          />
         ))}
-      </div>
+      </CardsGrid>
     </Section>
   );
 };

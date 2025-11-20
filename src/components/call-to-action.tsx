@@ -9,12 +9,12 @@ type Props = {
 
 const CallToAction = ({ title, description, buttonText, href }: Props) => {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-dashed border-muted p-6">
-      <div className="space-y-1">
-        <h3 className="text-2xl font-semibold">{title}</h3>
+    <div className="text-card-foreground flex flex-wrap items-center justify-between gap-6 rounded-xl border border-dashed p-6">
+      <div className="space-y-2 flex-1 min-w-[60%]">
+        <h3 className="text-lg font-semibold">{title}</h3>
         {description && <p className="text-muted-foreground">{description}</p>}
       </div>
-      <Button size="lg" asChild>
+      <Button size="lg" asChild className="shrink-0">
         <a href={href} target="_blank">
           {buttonText}
         </a>
