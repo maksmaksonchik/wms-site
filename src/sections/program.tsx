@@ -1,6 +1,7 @@
 import Section from "@/components/section";
 import Schedule from "@/components/schedule/schedule";
 import { schedule2025 } from "@/components/schedule/schedule_2025.mock";
+import { getScheduleMockWithDates } from "@/components/schedule/getScheduleMockWithDates";
 
 const content = {
   id: "program",
@@ -15,7 +16,7 @@ const Program = () => {
 
   return (
     <Section id={id} badge={badge} title={title} description={description}>
-      <Schedule schedule={schedule2025} />
+      <Schedule schedule={getScheduleMockWithDates(schedule2025, -3)} />
     </Section>
   );
 };
