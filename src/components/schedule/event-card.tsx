@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Card } from "../ui/card";
-import { Event } from "./schedule.types";
+import { Event } from "@/types/schedule.types";
 
 const EventCard = ({ event }: { event: Event }) => {
   return (

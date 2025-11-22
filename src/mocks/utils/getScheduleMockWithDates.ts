@@ -1,4 +1,4 @@
-import { Schedule } from "./schedule.types";
+import { Schedule } from "@/types/schedule.types";
 
 /**
  * Парсит дату из строки формата YYYY-MM-DD

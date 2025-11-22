@@ -1,4 +1,4 @@
-import type { Schedule } from "./schedule.types";
+import type { Schedule } from "@/types/schedule.types";
 
 export const schedule2025: Schedule = [
   {
