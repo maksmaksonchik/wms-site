@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Card } from "../ui/card";
 import { Event } from "@/types/schedule.types";
+import Markdown from "@/components/markdown";
 
 const EventCard = ({ event }: { event: Event }) => {
   return (
@@ -33,9 +34,9 @@ const EventCard = ({ event }: { event: Event }) => {
           {/* Описание и лектор: под картинкой на мобильных, справа на десктопе */}
           <div className="w-full md:flex-1 space-y-4">
             {event.description && (
-              <p className="text-muted-foreground leading-relaxed">
-                {event.description}
-              </p>
+              <div className="text-muted-foreground leading-relaxed">
+                <Markdown>{event.description}</Markdown>
+              </div>
             )}
 
             {event.speaker && (
