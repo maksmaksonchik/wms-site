@@ -1,47 +1,98 @@
+import Image from "next/image";
 import Section from "@/components/section";
-
+import { Card, CardTitle } from "@/components/ui/card";
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const content = {
   id: "directions",
   title: "Как добраться на ЗМШ?",
   badge: "Маршрут",
+  image: "/directions.jpg",
+  imageAlt: "Схема проезда",
 };
 
-const faqs = [
+const directions = [
   {
-    q: "Кому подойдет смена?",
-    a: "Участникам от 15 до 22 лет с интересом к математике, олимпиадам и современному IT.",
+    title: "На автобусе 🚌",
+    description:
+      "Туда: 29 января в 10:00. Сбор в 9:30 у Ленина, 51 (https://yandex.ru/maps/-/CHadAZ0Q).\nНа месте будет Макс Фёдоров (https://t.me/MYuFyodorov).\nОбратно: 5 февраля в 11:00.",
   },
   {
-    q: "Что включено в взнос?",
-    a: "Проживание, питание, трансфер из Екатеринбурга, образовательная и культурная программа.",
+    title: "На машине 🚗",
+    description:
+      "До ФОК «Гагаринский» (https://yandex.ru/maps/-/CHa-UH32).\nНе забудьте заполнить форму (https://docs.google.com/forms/d/e/1FAIpQLScHF0KH28P0JnPvEx-JAS85nGSma07UkKHJPkSfunkM7ALF6Q/viewform?usp=dialog) на въезд.\nПриезжайте раньше автобусов, чтобы не пересечься на парковке, примерно к 11:00.\nСхема проездов изображена на картинке.\nДвижение по территории ФОК разрешено со скоростью не более 10 км/ч при включённой аварийной сигнализации. Это мера обеспечения безопасности по просьбе администрации.",
   },
   {
-    q: "Как подать заявку?",
-    a: "Заполните форму и пришлите портфолио до 15 декабря. Результаты отбора — 20 декабря.",
+    title: "На электричке 🚂",
+    description:
+      "До Первоуральска (https://rasp.yandex.ru/suburban/ekaterinburg--pervouralsk-train-station).\nДалее на местном такси до ФОК «Гагаринский» (https://yandex.ru/maps/-/CHa-UH32).",
+  },
+  {
+    title: "На такси 🚕",
+    description:
+      "Цена из центра ~ 2000 ₽.\nЗаранее напишите Серёже Черных (https://t.me/SergCher), что приезжаете.",
   },
 ];
 
+/**
+ * Преобразует текст с URL в ссылки
+ */
+function formatTextWithLinks(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, index) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          {part}
+        </a>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
+}
+
 const Directions = () => {
-  const { id, title, badge } = content;
+  const { id, title, badge, image, imageAlt } = content;
 
   return (
     <Section id={id} badge={badge} title={title}>
-      <div className="grid gap-4 md:grid-cols-3">
-        {faqs.map((faq) => (
-          <Card key={faq.q} className="border-muted">
-            <CardHeader>
-              <CardTitle className="text-xl">{faq.q}</CardTitle>
-              <CardDescription>{faq.a}</CardDescription>
-            </CardHeader>
-          </Card>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="relative aspect-square rounded-xl overflow-hidden">
+          <Image src={image} alt={imageAlt} fill className="object-cover" />
+        </div>
+
+        <Accordion type="single" collapsible className="space-y-4">
+          {directions.map((direction, index) => (
+            <AccordionItem
+              key={index}
+              value={`item-${index}`}
+              className="border-0"
+            >
+              <Card className="p-0 gap-2">
+                <AccordionTrigger className="items-center p-6 cursor-pointer">
+                  <CardTitle className="text-lg">{direction.title}</CardTitle>
+                </AccordionTrigger>
+
+                <AccordionContent className="px-6 pb-6 text-muted-foreground whitespace-pre-line">
+                  {formatTextWithLinks(direction.description)}
+                </AccordionContent>
+              </Card>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </Section>
   );
