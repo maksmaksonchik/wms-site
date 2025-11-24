@@ -1,63 +1,82 @@
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Section from "@/components/section";
+import CardsGrid from "@/components/cards-grid";
+import CardLink from "@/components/card-link";
 
 const content = {
   id: "sponsors",
-  title: "Спонсоры ЗМШ-60",
+  title: "Спонсоры",
   description: "Школа становится возможной благодаря спонсорам.",
-  badge: "Спонсоры",
+  badge: "Поддержать ЗМШ",
 };
 
 const sponsors = [
   {
-    name: "Ирина Соколова",
-    role: "Кандидат физ.-мат. наук, тренер сборной СПб",
-    avatar: "/sponsors/irina.jpg",
+    name: "Максим Ефремов",
+    avatar: "/sponsors/efremov.jpg",
   },
   {
-    name: "Владимир Ким",
-    role: "Senior ML Engineer, экс-Yandex",
-    avatar: "/sponsors/vladimir.jpg",
+    name: "Владимир Гордеев",
   },
   {
-    name: "Мария Орлова",
-    role: "Организатор ЗМШ, наставник призеров IMO",
-    avatar: "/sponsors/maria.jpg",
+    name: "Саня Романов",
+    avatar: "/sponsors/romanov.jpg",
+  },
+  {
+    name: "Матвей Незнаев",
+    avatar: "/sponsors/neznaev.jpg",
+  },
+
+  {
+    name: "Александр Суворов",
+  },
+  {
+    name: "Дмитрий Костин",
   },
 ];
+
+const links = [
+  {
+    label: "Стать спонсором",
+    href: "https://buildin.ai/share/01b2ecbb-ae39-4354-8b1b-77b3fc10396a",
+  },
+  {
+    label: "Пакеты для бизнеса",
+    href: "https://buildin.ai/share/3c5dcb3d-c7e0-4f1d-865b-e7de6304a1b4",
+  },
+];
+
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .map((word) => word[0])
+    .join("");
 
 const Sponsors = () => {
   const { id, title, description, badge } = content;
 
   return (
     <Section id={id} badge={badge} title={title} description={description}>
-      <div className="grid gap-6 md:grid-cols-3">
+      <CardsGrid>
+        {links.map((stat) => (
+          <CardLink key={stat.href} href={stat.href} label={stat.label} />
+        ))}
+      </CardsGrid>
+      <h3 className="text-xl font-semibold">Спонсоры ЗМШ-60:</h3>
+      <CardsGrid>
         {sponsors.map((mentor) => (
-          <Card key={mentor.name} className="border-muted">
+          <Card key={mentor.name}>
             <CardHeader className="flex flex-row items-center gap-4">
-              <Avatar className="h-12 w-12">
+              <Avatar className="h-20 w-20">
                 <AvatarImage src={mentor.avatar} alt={mentor.name} />
-                <AvatarFallback>
-                  {mentor.name
-                    .split(" ")
-                    .map((word) => word[0])
-                    .join("")}
-                </AvatarFallback>
+                <AvatarFallback>{getInitials(mentor.name)}</AvatarFallback>
               </Avatar>
-              <div>
-                <CardTitle className="text-xl">{mentor.name}</CardTitle>
-                <CardDescription>{mentor.role}</CardDescription>
-              </div>
+              <CardTitle className="text-lg">{mentor.name}</CardTitle>
             </CardHeader>
           </Card>
         ))}
-      </div>
+      </CardsGrid>
     </Section>
   );
 };
