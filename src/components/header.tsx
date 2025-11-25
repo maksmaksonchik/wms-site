@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Menu, X } from "lucide-react";
 
 import {
   NavigationMenu,
@@ -9,8 +11,13 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
-import { ThemeToggle } from "./theme-toggle";
 import { siteConfig } from "@/config/site.config";
 
 const navLinks = [
@@ -22,12 +29,38 @@ const navLinks = [
   { id: "past", label: "Прошлые школы" },
 ];
 
+const MenuIcon = () => {
+  return (
+    <>
+      <Menu className="h-6 w-6" />
+      <span className="sr-only">Открыть меню</span>
+    </>
+  );
+};
+
+const CloseIcon = () => {
+  return (
+    <>
+      <X className="h-6 w-6" />
+      <span className="sr-only">Закрыть меню</span>
+    </>
+  );
+};
+
 const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    setIsMenuOpen(false);
+    e.currentTarget.blur();
+  };
+
   return (
     <header className="fixed inset-x-0 z-20 border-b border-border/40 bg-background/80 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-4 sm:gap-8 sm:px-10 lg:px-16">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-4 sm:px-10 lg:px-16">
         <Link
           href="#hero"
+          onClick={(e) => handleLinkClick(e)}
           className="flex items-center gap-2 transition hover:text-primary text-lg font-semibold tracking-tight"
         >
           <Image
@@ -41,24 +74,53 @@ const Header = () => {
           <span>{siteConfig.title}</span>
         </Link>
 
-        <NavigationMenu className="mx-auto">
-          <NavigationMenuList>
+        {/* Десктопное меню */}
+        <NavigationMenu className="hidden md:flex ml-auto">
+          <NavigationMenuList className="flex-nowrap">
             {navLinks.map((link) => (
               <NavigationMenuItem key={link.id}>
-                <NavigationMenuLink
-                  asChild
-                  onClick={(e) => e.currentTarget.blur()}
-                >
-                  <Link href={`#${link.id}`}>{link.label}</Link>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href={`#${link.id}`}
+                    onClick={(e) => handleLinkClick(e)}
+                    className="font-medium whitespace-nowrap"
+                  >
+                    {link.label}
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             ))}
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="ml-auto">
-          <ThemeToggle />
-        </div>
+        {/* Мобильное меню (бургер) */}
+        <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+          <PopoverTrigger asChild className="md:hidden">
+            <Button variant="ghost" size="icon">
+              {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
+            </Button>
+          </PopoverTrigger>
+
+          <PopoverContent
+            align="end"
+            side="bottom"
+            sideOffset={20}
+            alignOffset={-12}
+          >
+            <nav>
+              {navLinks.map((link) => (
+                <Link
+                  key={link.id}
+                  href={`#${link.id}`}
+                  onClick={(e) => handleLinkClick(e)}
+                  className="block p-3 text-lg font-medium rounded-md transition hover:bg-muted hover:text-primary"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+          </PopoverContent>
+        </Popover>
       </div>
     </header>
   );
