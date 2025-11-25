@@ -6,6 +6,7 @@ import Sponsors from "@/sections/sponsors";
 import Directions from "@/sections/directions";
 import Footer from "@/components/footer";
 import Members from "@/sections/members";
+import SchoolIs from "@/sections/school-is";
 
 const Home = () => {
   return (
@@ -18,6 +19,7 @@ const Home = () => {
         <Members />
         <Sponsors />
         <Directions />
+        <SchoolIs />
       </main>
       <Footer />
     </>
