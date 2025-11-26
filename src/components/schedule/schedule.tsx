@@ -43,7 +43,11 @@ const Schedule = ({ schedule }: ScheduleProps) => {
         }
       >
         {schedule.map((day) => (
-          <TabsTrigger key={day.date} value={day.date}>
+          <TabsTrigger
+            key={day.date}
+            value={day.date}
+            className="cursor-pointer"
+          >
             {formatDateForTab(day.date)}
           </TabsTrigger>
         ))}

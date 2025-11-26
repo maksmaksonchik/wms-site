@@ -96,7 +96,7 @@ const Header = () => {
         {/* Мобильное меню (бургер) */}
         <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
           <PopoverTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="cursor-pointer">
               {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
             </Button>
           </PopoverTrigger>
@@ -113,7 +113,7 @@ const Header = () => {
                   key={link.id}
                   href={`#${link.id}`}
                   onClick={(e) => handleLinkClick(e)}
-                  className="block p-3 text-lg font-medium rounded-md transition hover:bg-muted hover:text-primary"
+                  className="block p-3 text-lg font-medium rounded-md transition hover:bg-accent hover:text-primary"
                 >
                   {link.label}
                 </Link>
