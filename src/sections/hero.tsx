@@ -6,7 +6,7 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="flex items-end min-h-screen w-full bg-cover bg-center"
+      className="relative flex items-end min-h-screen w-full bg-cover bg-center"
       style={{ backgroundImage: "url('/bg.jpg')" }}
     >
       {/* Hero всегда отображается темным, кроме Badge, поэтому добавляем dark класс */}
