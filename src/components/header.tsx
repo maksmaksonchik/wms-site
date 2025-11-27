@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Menu, X } from "lucide-react";
 
 import {
@@ -19,6 +18,9 @@ import {
 } from "@/components/ui/popover";
 
 import { siteConfig } from "@/config/site.config";
+import { ThemeToggle } from "./theme-toggle";
+import Logo from "./logo";
+import Container from "./container";
 
 const navLinks = [
   { id: "program", label: "Расписание" },
@@ -57,71 +59,72 @@ const Header = () => {
 
   return (
     <header className="fixed inset-x-0 z-20 border-b border-border/40 bg-background/80 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-4 sm:px-10 lg:px-16">
+      <Container className="flex items-center justify-between gap-4 py-4">
         <Link
           href="#hero"
           onClick={(e) => handleLinkClick(e)}
           className="flex items-center gap-2 transition hover:text-primary text-lg font-semibold tracking-tight"
         >
-          <Image
-            src={siteConfig.logo}
-            alt="Логотип"
-            width={24}
-            height={24}
-            className="w-[1.5em] h-[1.5em]"
-            priority
-          />
+          <Logo variant="primary" className="w-[1.5em] h-[1.5em]" />
           <span>{siteConfig.title}</span>
         </Link>
 
         {/* Десктопное меню */}
-        <NavigationMenu className="hidden md:flex ml-auto">
-          <NavigationMenuList className="flex-nowrap">
-            {navLinks.map((link) => (
-              <NavigationMenuItem key={link.id}>
-                <NavigationMenuLink asChild>
+        <div className="hidden md:flex items-center gap-2">
+          <NavigationMenu className=" ml-auto">
+            <NavigationMenuList className="flex-nowrap">
+              {navLinks.map((link) => (
+                <NavigationMenuItem key={link.id}>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href={`#${link.id}`}
+                      onClick={(e) => handleLinkClick(e)}
+                      className="font-medium whitespace-nowrap"
+                    >
+                      {link.label}
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          <ThemeToggle variant="outline" />
+        </div>
+
+        {/* Мобильное меню */}
+        <div className="flex md:hidden items-center gap-2">
+          <ThemeToggle variant="ghost" />
+
+          <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="cursor-pointer">
+                {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent
+              align="end"
+              side="bottom"
+              sideOffset={20}
+              alignOffset={-12}
+            >
+              <nav>
+                {navLinks.map((link) => (
                   <Link
+                    key={link.id}
                     href={`#${link.id}`}
                     onClick={(e) => handleLinkClick(e)}
-                    className="font-medium whitespace-nowrap"
+                    className="block p-3 text-lg font-medium rounded-md transition hover:bg-accent hover:text-primary"
                   >
                     {link.label}
                   </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-
-        {/* Мобильное меню (бургер) */}
-        <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-          <PopoverTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon">
-              {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
-            </Button>
-          </PopoverTrigger>
-
-          <PopoverContent
-            align="end"
-            side="bottom"
-            sideOffset={20}
-            alignOffset={-12}
-          >
-            <nav>
-              {navLinks.map((link) => (
-                <Link
-                  key={link.id}
-                  href={`#${link.id}`}
-                  onClick={(e) => handleLinkClick(e)}
-                  className="block p-3 text-lg font-medium rounded-md transition hover:bg-muted hover:text-primary"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </PopoverContent>
-        </Popover>
-      </div>
+                ))}
+              </nav>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </Container>
     </header>
   );
 };

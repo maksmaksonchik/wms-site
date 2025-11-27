@@ -37,11 +37,7 @@ const Schedule = ({ schedule }: ScheduleProps) => {
       className="scroll-mt-20"
       ref={scrollRef}
     >
-      <TabsList
-        className={
-          "sticky top-20 z-10 w-full mb-8 justify-start lg:overflow-x-hidden overflow-x-auto transition-all duration-200 shadow-2xl backdrop-blur-sm"
-        }
-      >
+      <TabsList className="w-full mb-8 sticky top-20 z-10 shadow-2xl backdrop-blur-sm overflow-x-auto">
         {schedule.map((day) => (
           <TabsTrigger key={day.date} value={day.date}>
             {formatDateForTab(day.date)}
