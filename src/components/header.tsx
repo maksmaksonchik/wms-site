@@ -20,6 +20,7 @@ import {
 import { siteConfig } from "@/config/site.config";
 import { ThemeToggle } from "./theme-toggle";
 import Logo from "./logo";
+import Container from "./container";
 
 const navLinks = [
   { id: "program", label: "Расписание" },
@@ -58,7 +59,7 @@ const Header = () => {
 
   return (
     <header className="fixed inset-x-0 z-20 border-b border-border/40 bg-background/80 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-4 sm:px-10 lg:px-16">
+      <Container className="flex items-center justify-between gap-4 py-4">
         <Link
           href="#hero"
           onClick={(e) => handleLinkClick(e)}
@@ -123,7 +124,7 @@ const Header = () => {
             </PopoverContent>
           </Popover>
         </div>
-      </div>
+      </Container>
     </header>
   );
 };

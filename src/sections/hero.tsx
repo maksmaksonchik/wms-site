@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { MapPin } from "lucide-react";
+import Container from "@/components/container";
 
 const Hero = () => {
   return (
@@ -10,7 +11,7 @@ const Hero = () => {
     >
       {/* Hero всегда отображается темным, кроме Badge, поэтому добавляем dark класс */}
       <div className="dark absolute inset-0 bg-linear-to-tr from-background/95 via-background/60 to-background/20" />
-      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 pb-20 pt-32 sm:px-10 lg:px-16">
+      <Container className="relative z-10 flex flex-col gap-6 pb-20 pt-32">
         <div className="max-w-3xl space-y-6">
           <Badge variant="default">ЗМШ-60</Badge>
           <h1 className="dark text-4xl font-bold text-foreground leading-tight tracking-tight text-balance sm:text-5xl lg:text-6xl">
@@ -30,7 +31,7 @@ const Hero = () => {
             </a>
           </p>
         </div>
-      </div>
+      </Container>
     </section>
   );
 };
