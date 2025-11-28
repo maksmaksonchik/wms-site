@@ -1,0 +1,45 @@
+services:
+  strapi-db:
+    container_name: wms_strapi_db
+    restart: always
+    env_file: backend/.env
+    image: postgres:17-alpine
+    volumes:
+      - strapi-data:/var/lib/postgresql/data/
+
+  strapi:
+    container_name: wms_strapi
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+    restart: always
+    env_file: backend/.env
+    depends_on:
+      - strapi-db
+
+  front:
+    container_name: wms_front
+    build:
+      context: frontend/
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - strapi
+
+  nginx:
+    container_name: wms_nginx
+    restart: always
+    image: nginx:1.28-alpine
+    env_file: .env
+    volumes:
+      - ${SSL_CERT_PATH}:/etc/nginx/conf.d/site.crt:ro
+      - ${SSL_KEY_PATH}:/etc/nginx/conf.d/site.key:ro
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+    depends_on:
+      - front
+    ports:
+      - "80:80"
+      - "443:443"
+
+volumes:
+  strapi-data:
