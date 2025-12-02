@@ -1,0 +1,26 @@
+{
+  "name": "wms-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Сайт Зимней математической школы",
+  "type": "module",
+  "scripts": {
+    "install:front": "cd frontend && npm install",
+    "install:back": "cd backend && npm install",
+    "install:deps": "npm run install:front && npm run install:back",
+    "generate:ssl": "node ./scripts/generate_ssl.js",
+    "generate:secrets": "node ./scripts/generate_secrets.js",
+    "dev:front": "cd frontend && npm run dev",
+    "dev:back": "cd backend && npm run dev",
+    "db:up": "docker compose -f docker-compose-dev.yml up -d",
+    "db:down": "docker compose -f docker-compose-dev.yml down --remove-orphans",
+    "build": "docker compose build",
+    "down": "docker compose down --remove-orphans",
+    "up": "docker compose up -d",
+    "prod": "npm run build && npm run down && npm run up",
+    "logs": "docker compose logs -f"
+  },
+  "devDependencies": {
+    "execa": "^9.4.0"
+  }
+}
