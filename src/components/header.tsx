@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
 import {
@@ -60,14 +59,14 @@ const Header = () => {
   return (
     <header className="fixed inset-x-0 z-20 border-b border-border/40 bg-background/80 backdrop-blur">
       <Container className="flex items-center justify-between gap-4 py-4">
-        <Link
+        <a
           href="#hero"
           onClick={(e) => handleLinkClick(e)}
           className="flex items-center gap-2 transition hover:text-primary text-lg font-semibold tracking-tight"
         >
           <Logo variant="primary" className="w-[1.5em] h-[1.5em]" />
           <span>{siteConfig.title}</span>
-        </Link>
+        </a>
 
         {/* Десктопное меню */}
         <div className="hidden md:flex items-center gap-2">
@@ -76,13 +75,13 @@ const Header = () => {
               {navLinks.map((link) => (
                 <NavigationMenuItem key={link.id}>
                   <NavigationMenuLink asChild>
-                    <Link
+                    <a
                       href={`#${link.id}`}
                       onClick={(e) => handleLinkClick(e)}
                       className="font-medium whitespace-nowrap"
                     >
                       {link.label}
-                    </Link>
+                    </a>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
@@ -111,14 +110,14 @@ const Header = () => {
             >
               <nav>
                 {navLinks.map((link) => (
-                  <Link
+                  <a
                     key={link.id}
                     href={`#${link.id}`}
                     onClick={(e) => handleLinkClick(e)}
                     className="block p-3 text-lg font-medium rounded-md transition hover:bg-accent hover:text-primary"
                   >
                     {link.label}
-                  </Link>
+                  </a>
                 ))}
               </nav>
             </PopoverContent>

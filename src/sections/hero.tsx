@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { MapPin } from "lucide-react";
 import Container from "@/components/container";
+import A from "@/components/typography/a";
 
 const Hero = () => {
   return (
@@ -21,14 +22,13 @@ const Hero = () => {
             28 января — 5 февраля, 2026
           </p>
           <p className="dark text-base text-muted-foreground sm:text-lg">
-            <a
+            <A
               href="https://fokgagarin.ru/contacts/"
-              target="_blank"
-              className="inline-flex items-center transition hover:text-foreground"
+              className="inline-flex items-center text-muted-foreground"
             >
               <MapPin className="inline mr-2" size="1em" />
               ФОК Гагаринский
-            </a>
+            </A>
           </p>
         </div>
       </Container>

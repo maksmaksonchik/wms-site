@@ -2,6 +2,7 @@
 
 import { siteConfig } from "@/config/site.config";
 import Container from "./container";
+import A from "@/components/typography/a";
 
 const Footer = () => {
   return (
@@ -10,13 +11,9 @@ const Footer = () => {
         <span>
           © {new Date().getFullYear()} {siteConfig.longTitle}.
         </span>
-        <a
-          href={siteConfig.footerLink.href}
-          target="_blank"
-          className="transition hover:text-foreground"
-        >
+        <A href={siteConfig.footerLink.href} className="text-muted-foreground">
           {siteConfig.footerLink.title}
-        </a>
+        </A>
       </Container>
     </footer>
   );
