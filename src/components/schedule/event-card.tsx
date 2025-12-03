@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Card } from "../ui/card";
 import { Event } from "@/types/schedule.types";
-import Markdown from "@/components/markdown";
+import Markdown from "@/components/typography/markdown";
 
 const EventCard = ({ event }: { event: Event }) => {
   return (

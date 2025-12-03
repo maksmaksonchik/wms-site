@@ -10,7 +10,7 @@ type Props = {
 
 const CardLink = ({ href, label, description }: Props) => {
   return (
-    <a href={href} target="_blank" className="group">
+    <a href={href} target="_blank" rel="noopener noreferrer" className="group">
       <Card className="transition group-hover:bg-accent">
         <CardHeader className="gap-0 space-y-2">
           <CardTitle className="text-lg flex items-center gap-1 group-hover:underline">
