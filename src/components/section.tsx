@@ -1,7 +1,7 @@
 import { Badge } from "./ui/badge";
 import Container from "./container";
 
-type Props = {
+type SectionProps = {
   id: string; // уникальный идентификатор для навигации
   title: string; // заголовок секции
   description?: string; // текст в секции
@@ -9,7 +9,21 @@ type Props = {
   children?: React.ReactNode;
 };
 
-const Section = ({ id, title, description, badge, children }: Props) => {
+type SubsectionProps = {
+  children: React.ReactNode;
+  title: string;
+};
+
+const Subsection = ({ children, title }: SubsectionProps) => {
+  return (
+    <div className="mt-8 space-y-4">
+      <h3 className="text-xl font-semibold">{title}</h3>
+      {children}
+    </div>
+  );
+};
+
+const Section = ({ id, title, description, badge, children }: SectionProps) => {
   return (
     <section id={id}>
       <Container className="flex flex-col gap-8 py-20">
@@ -24,4 +38,5 @@ const Section = ({ id, title, description, badge, children }: Props) => {
   );
 };
 
+export { Subsection, Section };
 export default Section;

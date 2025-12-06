@@ -17,8 +17,8 @@ const Home = () => {
         <About />
         <Program />
         <Members />
-        <Sponsors />
         <Directions />
+        <Sponsors />
         <SchoolIs />
       </main>
       <Footer />
