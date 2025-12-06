@@ -26,8 +26,7 @@ const navLinks = [
   { id: "members", label: "Участники" },
   { id: "directions", label: "Как добраться" },
   { id: "sponsors", label: "Спонсоры" },
-  { id: "merch", label: "Мерч" },
-  { id: "past", label: "Прошлые школы" },
+  { id: "past", label: "Прошедшие школы" },
 ];
 
 const MenuIcon = () => {
