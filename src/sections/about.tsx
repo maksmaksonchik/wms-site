@@ -1,5 +1,5 @@
 import CardLink from "@/components/card-link";
-import CardsGrid from "@/components/cards-grid";
+import CardsGrid from "@/components/grid";
 import Section from "@/components/section";
 import { siteConfig } from "@/config/site.config";
 
