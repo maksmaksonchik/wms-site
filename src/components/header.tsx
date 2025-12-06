@@ -24,8 +24,8 @@ import Container from "./container";
 const navLinks = [
   { id: "program", label: "Расписание" },
   { id: "members", label: "Участники" },
-  { id: "sponsors", label: "Спонсоры" },
   { id: "directions", label: "Как добраться" },
+  { id: "sponsors", label: "Спонсоры" },
   { id: "merch", label: "Мерч" },
   { id: "past", label: "Прошлые школы" },
 ];
