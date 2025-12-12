@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import Markdown from "@/components/markdown";
+import Markdown from "@/components/typography/markdown";
 
 const content = {
   id: "directions",

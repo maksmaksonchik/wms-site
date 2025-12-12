@@ -1,8 +1,10 @@
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Section from "@/components/section";
-import CardsGrid from "@/components/cards-grid";
+import { Section, Subsection } from "@/components/section";
+import CardsGrid from "@/components/grid";
 import CardLink from "@/components/card-link";
+import { sponsorsMock } from "@/mocks/sponsors";
+import LogoCard from "@/components/logo-card";
+import PersonCard from "@/components/person-card";
+import Grid from "@/components/grid";
 
 const content = {
   id: "sponsors",
@@ -10,31 +12,6 @@ const content = {
   description: "Школа становится возможной благодаря спонсорам.",
   badge: "Поддержать ЗМШ",
 };
-
-const sponsors = [
-  {
-    name: "Максим Ефремов",
-    avatar: "/sponsors/efremov.jpg",
-  },
-  {
-    name: "Владимир Гордеев",
-  },
-  {
-    name: "Саня Романов",
-    avatar: "/sponsors/romanov.jpg",
-  },
-  {
-    name: "Матвей Незнаев",
-    avatar: "/sponsors/neznaev.jpg",
-  },
-
-  {
-    name: "Александр Суворов",
-  },
-  {
-    name: "Дмитрий Костин",
-  },
-];
 
 const links = [
   {
@@ -47,14 +24,15 @@ const links = [
   },
 ];
 
-const getInitials = (name: string) =>
-  name
-    .split(" ")
-    .map((word) => word[0])
-    .join("");
-
 const Sponsors = () => {
   const { id, title, description, badge } = content;
+
+  const data = {
+    gold: sponsorsMock.getSponsors("gold"),
+    silver: sponsorsMock.getSponsors("silver"),
+    bronze: sponsorsMock.getSponsors("bronze"),
+    donators: sponsorsMock.getDonators(),
+  };
 
   return (
     <Section id={id} badge={badge} title={title} description={description}>
@@ -63,20 +41,50 @@ const Sponsors = () => {
           <CardLink key={stat.href} href={stat.href} label={stat.label} />
         ))}
       </CardsGrid>
-      <h3 className="text-xl font-semibold">Спонсоры ЗМШ-60:</h3>
-      <CardsGrid>
-        {sponsors.map((mentor) => (
-          <Card key={mentor.name}>
-            <CardHeader className="flex flex-row items-center gap-4">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={mentor.avatar} alt={mentor.name} />
-                <AvatarFallback>{getInitials(mentor.name)}</AvatarFallback>
-              </Avatar>
-              <CardTitle className="text-lg">{mentor.name}</CardTitle>
-            </CardHeader>
-          </Card>
-        ))}
-      </CardsGrid>
+
+      {/* Золотой уровень */}
+      <Subsection title="Генеральные партнёры ЗМШ-60">
+        <Grid type="fixed" cols={3}>
+          {data.gold.map((sponsor, index) => (
+            <LogoCard
+              key={`gold-sponsor-${index}`}
+              sponsor={sponsor}
+              variant="large"
+            />
+          ))}
+        </Grid>
+      </Subsection>
+
+      {/* Серебряный уровень */}
+      <Subsection title="Партнёры ЗМШ-60">
+        <Grid type="fixed" cols={4}>
+          {data.silver.map((sponsor, index) => (
+            <LogoCard key={`silver-sponsor-${index}`} sponsor={sponsor} />
+          ))}
+        </Grid>
+      </Subsection>
+
+      {/* Бронзовый уровень */}
+      <Subsection title="Официальные спонсоры ЗМШ-60">
+        <Grid type="fixed" cols={5}>
+          {data.bronze.map((sponsor, index) => (
+            <LogoCard key={`bronze-sponsor-${index}`} sponsor={sponsor} />
+          ))}
+        </Grid>
+      </Subsection>
+
+      {/* Доноры */}
+      <Subsection title="Индивидуальные спонсоры ЗМШ-60">
+        <Grid type="auto" className="gap-4 sm:gap-6">
+          {data.donators.map((donator, index) => (
+            <PersonCard
+              key={`donator-${index}`}
+              avatar={donator.avatar}
+              name={donator.name}
+            />
+          ))}
+        </Grid>
+      </Subsection>
     </Section>
   );
 };

@@ -1,15 +1,11 @@
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
+import A from "@/components/typography/a";
 
-// TODO: Доработать компоненты Markdown
 const components: Components = {
   strong: ({ children }) => <b className="font-bold">{children}</b>,
   em: ({ children }) => <i className="italic">{children}</i>,
-  a: ({ children, href }) => (
-    <a href={href} target="_blank" className="text-primary hover:underline">
-      {children}
-    </a>
-  ),
+  a: A,
 };
 
 const Markdown = ({ children }: { children: string | undefined | null }) => {

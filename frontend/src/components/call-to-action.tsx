@@ -15,7 +15,7 @@ const CallToAction = ({ title, description, buttonText, href }: Props) => {
         {description && <p className="text-muted-foreground">{description}</p>}
       </div>
       <Button size="lg" asChild className="shrink-0">
-        <a href={href} target="_blank">
+        <a href={href} target="_blank" rel="noopener noreferrer">
           {buttonText}
         </a>
       </Button>
