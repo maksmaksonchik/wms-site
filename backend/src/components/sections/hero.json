@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_sections_heroes",
+  "info": {
+    "displayName": "Hero"
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "badge": {
+      "type": "string"
+    },
+    "dates": {
+      "type": "string"
+    },
+    "location": {
+      "type": "component",
+      "component": "shared.text-link",
+      "repeatable": false
+    },
+    "background": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

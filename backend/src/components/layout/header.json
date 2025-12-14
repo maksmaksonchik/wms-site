@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_layout_headers",
+  "info": {
+    "displayName": "Header"
+  },
+  "options": {},
+  "attributes": {
+    "navLinks": {
+      "type": "component",
+      "component": "shared.nav-link",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}
