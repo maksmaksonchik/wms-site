@@ -6,6 +6,7 @@ const populate = {
       navLinks: true,
     },
   },
+
   hero: {
     populate: {
       location: true,
@@ -14,6 +15,19 @@ const populate = {
       },
     },
   },
+
+  sections: {
+    populate: {
+      blocks: {
+        on: {
+          "blocks.link-card": true,
+
+          "blocks.call-to-action": true,
+        },
+      },
+    },
+  },
+
   footer: {
     populate: {
       link: true,

@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_blocks_link_cards",
+  "info": {
+    "displayName": "Link Card"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string"
+    },
+    "isInternal": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "config": {}
+}

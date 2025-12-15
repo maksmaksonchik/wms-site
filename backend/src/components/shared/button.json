@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_shared_buttons",
+  "info": {
+    "displayName": "Button"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string"
+    },
+    "isInternal": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "config": {}
+}

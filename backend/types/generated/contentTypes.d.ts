@@ -446,11 +446,50 @@ export interface ApiLandingPageLandingPage extends Struct.SingleTypeSchema {
       Schema.Attribute.Private;
     footer: Schema.Attribute.Component<'layout.footer', false>;
     header: Schema.Attribute.Component<'layout.header', false>;
-    hero: Schema.Attribute.Component<'sections.hero', false>;
+    hero: Schema.Attribute.Component<'layout.hero', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::landing-page.landing-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    sections: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::landing-section.landing-section'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLandingSectionLandingSection
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'landing_sections';
+  info: {
+    displayName: 'Landing Section';
+    pluralName: 'landing-sections';
+    singularName: 'landing-section';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    anchorId: Schema.Attribute.String;
+    badge: Schema.Attribute.String;
+    blocks: Schema.Attribute.DynamicZone<
+      ['blocks.link-card', 'blocks.call-to-action']
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    heading: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::landing-section.landing-section'
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
@@ -971,6 +1010,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
+      'api::landing-section.landing-section': ApiLandingSectionLandingSection;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

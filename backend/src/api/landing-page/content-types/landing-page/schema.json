@@ -18,13 +18,18 @@
     },
     "hero": {
       "type": "component",
-      "component": "sections.hero",
+      "component": "layout.hero",
       "repeatable": false
     },
     "footer": {
       "type": "component",
       "component": "layout.footer",
       "repeatable": false
+    },
+    "sections": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::landing-section.landing-section"
     }
   }
 }
