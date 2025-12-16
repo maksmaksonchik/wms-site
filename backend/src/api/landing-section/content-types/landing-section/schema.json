@@ -27,7 +27,8 @@
       "type": "dynamiczone",
       "components": [
         "blocks.link-card",
-        "blocks.call-to-action"
+        "blocks.call-to-action",
+        "blocks.schedule"
       ]
     }
   }

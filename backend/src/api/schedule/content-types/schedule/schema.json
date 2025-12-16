@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "schedules",
+  "info": {
+    "singularName": "schedule",
+    "pluralName": "schedules",
+    "displayName": "Schedule"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "ЗМШ-",
+      "required": true,
+      "unique": true
+    },
+    "year": {
+      "type": "integer",
+      "required": true,
+      "unique": true
+    },
+    "schoolNumber": {
+      "type": "integer",
+      "required": true,
+      "unique": true
+    },
+    "scheduleDays": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::schedule-day.schedule-day",
+      "mappedBy": "schedule"
+    }
+  }
+}

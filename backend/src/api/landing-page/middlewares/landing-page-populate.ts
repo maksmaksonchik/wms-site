@@ -17,12 +17,21 @@ const populate = {
   },
 
   sections: {
+    fields: ["heading", "badge", "description", "anchorId"],
     populate: {
       blocks: {
         on: {
           "blocks.link-card": true,
 
           "blocks.call-to-action": true,
+
+          "blocks.schedule": {
+            populate: {
+              schedule: {
+                fields: ["documentId"],
+              },
+            },
+          },
         },
       },
     },

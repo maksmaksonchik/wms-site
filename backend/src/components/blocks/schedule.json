@@ -4,6 +4,12 @@
     "displayName": "Schedule"
   },
   "options": {},
-  "attributes": {},
+  "attributes": {
+    "schedule": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::schedule.schedule"
+    }
+  },
   "config": {}
 }

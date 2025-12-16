@@ -30,7 +30,9 @@ export interface BlocksSchedule extends Struct.ComponentSchema {
   info: {
     displayName: 'Schedule';
   };
-  attributes: {};
+  attributes: {
+    schedule: Schema.Attribute.Relation<'oneToOne', 'api::schedule.schedule'>;
+  };
 }
 
 export interface LayoutFooter extends Struct.ComponentSchema {

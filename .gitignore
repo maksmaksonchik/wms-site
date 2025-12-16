@@ -52,6 +52,7 @@ exports
 dist
 .strapi-updater.json
 .strapi-cloud.json
+uploads
 
 # local certs
 site.key
