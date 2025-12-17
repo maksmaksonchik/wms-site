@@ -6,10 +6,12 @@
   "options": {},
   "attributes": {
     "heading": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "badge": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "dates": {
       "type": "string"
@@ -22,6 +24,7 @@
     "background": {
       "type": "media",
       "multiple": false,
+      "required": true,
       "allowedTypes": [
         "images"
       ]

@@ -6,9 +6,10 @@ export interface BlocksCallToAction extends Struct.ComponentSchema {
     displayName: 'Call To Action';
   };
   attributes: {
-    button: Schema.Attribute.Component<'shared.button', false>;
+    button: Schema.Attribute.Component<'shared.button', false> &
+      Schema.Attribute.Required;
     description: Schema.Attribute.String;
-    title: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -18,10 +19,12 @@ export interface BlocksLinkCard extends Struct.ComponentSchema {
     displayName: 'Link Card';
   };
   attributes: {
-    href: Schema.Attribute.String;
-    isInternal: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    isInternal: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
     subtitle: Schema.Attribute.String;
-    title: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -41,7 +44,7 @@ export interface LayoutFooter extends Struct.ComponentSchema {
     displayName: 'Footer';
   };
   attributes: {
-    copyright: Schema.Attribute.String;
+    copyright: Schema.Attribute.String & Schema.Attribute.Required;
     link: Schema.Attribute.Component<'shared.text-link', false>;
   };
 }
@@ -62,10 +65,10 @@ export interface LayoutHero extends Struct.ComponentSchema {
     displayName: 'Hero';
   };
   attributes: {
-    background: Schema.Attribute.Media<'images'>;
-    badge: Schema.Attribute.String;
+    background: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    badge: Schema.Attribute.String & Schema.Attribute.Required;
     dates: Schema.Attribute.String;
-    heading: Schema.Attribute.String;
+    heading: Schema.Attribute.String & Schema.Attribute.Required;
     location: Schema.Attribute.Component<'shared.text-link', false>;
   };
 }
@@ -76,9 +79,11 @@ export interface SharedButton extends Struct.ComponentSchema {
     displayName: 'Button';
   };
   attributes: {
-    href: Schema.Attribute.String;
-    isInternal: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    label: Schema.Attribute.String;
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    isInternal: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -88,8 +93,8 @@ export interface SharedNavLink extends Struct.ComponentSchema {
     displayName: 'Nav Link';
   };
   attributes: {
-    href: Schema.Attribute.String;
-    label: Schema.Attribute.String;
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -99,9 +104,11 @@ export interface SharedTextLink extends Struct.ComponentSchema {
     displayName: 'Text Link';
   };
   attributes: {
-    href: Schema.Attribute.String;
-    isInternal: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    label: Schema.Attribute.String;
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    isInternal: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 

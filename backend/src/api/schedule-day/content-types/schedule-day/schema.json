@@ -15,17 +15,17 @@
       "type": "date",
       "required": true
     },
-    "events": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::event.event",
-      "mappedBy": "scheduleDays"
-    },
     "schedule": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::schedule.schedule",
       "inversedBy": "scheduleDays"
+    },
+    "events": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::event.event",
+      "mappedBy": "scheduleDays"
     }
   }
 }

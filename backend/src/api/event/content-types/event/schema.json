@@ -11,13 +11,11 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "scheduleDays": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::schedule-day.schedule-day",
-      "inversedBy": "events"
+    "title": {
+      "type": "string",
+      "required": true
     },
-    "isAfterMidnight": {
+    "isLecture": {
       "type": "boolean",
       "required": true,
       "default": false
@@ -30,14 +28,16 @@
       "type": "time",
       "required": true
     },
-    "title": {
-      "type": "string",
-      "required": true
-    },
-    "isLecture": {
+    "isAfterMidnight": {
       "type": "boolean",
       "required": true,
       "default": false
+    },
+    "scheduleDays": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::schedule-day.schedule-day",
+      "inversedBy": "events"
     },
     "speaker": {
       "type": "relation",

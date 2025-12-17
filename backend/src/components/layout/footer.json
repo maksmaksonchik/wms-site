@@ -6,7 +6,8 @@
   "options": {},
   "attributes": {
     "copyright": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "link": {
       "type": "component",

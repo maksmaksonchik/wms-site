@@ -6,7 +6,8 @@
   "options": {},
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "description": {
       "type": "string"
@@ -14,7 +15,8 @@
     "button": {
       "type": "component",
       "component": "shared.button",
-      "repeatable": false
+      "repeatable": false,
+      "required": true
     }
   },
   "config": {}

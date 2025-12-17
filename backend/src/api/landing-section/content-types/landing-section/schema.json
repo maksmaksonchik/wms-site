@@ -12,16 +12,18 @@
   "pluginOptions": {},
   "attributes": {
     "heading": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "badge": {
+      "type": "string",
+      "required": true
+    },
+    "anchorId": {
       "type": "string"
     },
     "description": {
       "type": "text"
-    },
-    "anchorId": {
-      "type": "string"
     },
     "blocks": {
       "type": "dynamiczone",

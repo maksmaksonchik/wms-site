@@ -6,16 +6,19 @@
   "options": {},
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "subtitle": {
       "type": "string"
     },
     "href": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "isInternal": {
       "type": "boolean",
+      "required": true,
       "default": false
     }
   },

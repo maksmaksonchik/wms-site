@@ -13,7 +13,6 @@
   "attributes": {
     "title": {
       "type": "string",
-      "default": "ЗМШ-",
       "required": true,
       "unique": true
     },

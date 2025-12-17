@@ -6,10 +6,12 @@
   "options": {},
   "attributes": {
     "label": {
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "href": {
-      "type": "string"
+      "type": "string",
+      "required": true
     }
   },
   "config": {}

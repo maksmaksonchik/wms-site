@@ -484,9 +484,12 @@ export interface ApiLandingPageLandingPage extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    footer: Schema.Attribute.Component<'layout.footer', false>;
-    header: Schema.Attribute.Component<'layout.header', false>;
-    hero: Schema.Attribute.Component<'layout.hero', false>;
+    footer: Schema.Attribute.Component<'layout.footer', false> &
+      Schema.Attribute.Required;
+    header: Schema.Attribute.Component<'layout.header', false> &
+      Schema.Attribute.Required;
+    hero: Schema.Attribute.Component<'layout.hero', false> &
+      Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -517,7 +520,7 @@ export interface ApiLandingSectionLandingSection
   };
   attributes: {
     anchorId: Schema.Attribute.String;
-    badge: Schema.Attribute.String;
+    badge: Schema.Attribute.String & Schema.Attribute.Required;
     blocks: Schema.Attribute.DynamicZone<
       ['blocks.link-card', 'blocks.call-to-action', 'blocks.schedule']
     >;
@@ -525,7 +528,7 @@ export interface ApiLandingSectionLandingSection
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text;
-    heading: Schema.Attribute.String;
+    heading: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -599,8 +602,7 @@ export interface ApiScheduleSchedule extends Struct.CollectionTypeSchema {
       Schema.Attribute.Unique;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
-      Schema.Attribute.Unique &
-      Schema.Attribute.DefaultTo<'\u0417\u041C\u0428-'>;
+      Schema.Attribute.Unique;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
