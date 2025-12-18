@@ -430,6 +430,33 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiDonorDonor extends Struct.CollectionTypeSchema {
+  collectionName: 'donors';
+  info: {
+    displayName: 'Donor';
+    pluralName: 'donors';
+    singularName: 'donor';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    avatar: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::donor.donor'> &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    schools: Schema.Attribute.Relation<'manyToMany', 'api::school.school'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   collectionName: 'events';
   info: {
@@ -522,12 +549,22 @@ export interface ApiLandingSectionLandingSection
     anchorId: Schema.Attribute.String;
     badge: Schema.Attribute.String & Schema.Attribute.Required;
     blocks: Schema.Attribute.DynamicZone<
-      ['blocks.link-card', 'blocks.call-to-action', 'blocks.schedule']
+      [
+        'blocks.link-card',
+        'blocks.call-to-action',
+        'blocks.schedule',
+        'blocks.sponsors-galery',
+        'blocks.school-is-galery',
+        'blocks.link-card-grid',
+        'blocks.image',
+        'blocks.image-with-accordion',
+        'blocks.accordion',
+      ]
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
+    description: Schema.Attribute.RichText;
     heading: Schema.Attribute.String & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -597,18 +634,81 @@ export interface ApiScheduleSchedule extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::schedule-day.schedule-day'
     >;
-    schoolNumber: Schema.Attribute.Integer &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
+    school: Schema.Attribute.Relation<'oneToOne', 'api::school.school'>;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    year: Schema.Attribute.Integer &
+  };
+}
+
+export interface ApiSchoolIsItemSchoolIsItem
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'school_is_items';
+  info: {
+    displayName: 'School Is Item';
+    pluralName: 'school-is-items';
+    singularName: 'school-is-item';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    avatar: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    credentials: Schema.Attribute.String & Schema.Attribute.Required;
+    definition: Schema.Attribute.String & Schema.Attribute.Required;
+    isHidden: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
-      Schema.Attribute.Unique;
+      Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::school-is-item.school-is-item'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSchoolSchool extends Struct.CollectionTypeSchema {
+  collectionName: 'schools';
+  info: {
+    displayName: 'School';
+    pluralName: 'schools';
+    singularName: 'school';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    donors: Schema.Attribute.Relation<'manyToMany', 'api::donor.donor'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::school.school'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    schedule: Schema.Attribute.Relation<'oneToOne', 'api::schedule.schedule'>;
+    schoolNumber: Schema.Attribute.Integer & Schema.Attribute.Required;
+    sponsors: Schema.Attribute.Relation<'manyToMany', 'api::sponsor.sponsor'>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    year: Schema.Attribute.Integer & Schema.Attribute.Required;
   };
 }
 
@@ -642,6 +742,40 @@ export interface ApiSpeakerSpeaker extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSponsorSponsor extends Struct.CollectionTypeSchema {
+  collectionName: 'sponsors';
+  info: {
+    displayName: 'Sponsor';
+    pluralName: 'sponsors';
+    singularName: 'sponsor';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    level: Schema.Attribute.Enumeration<['bronze', 'silver', 'gold']> &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sponsor.sponsor'
+    > &
+      Schema.Attribute.Private;
+    logo: Schema.Attribute.Component<'shared.themed-image', false> &
+      Schema.Attribute.Required;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    schools: Schema.Attribute.Relation<'manyToMany', 'api::school.school'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String;
   };
 }
 
@@ -1155,12 +1289,16 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::donor.donor': ApiDonorDonor;
       'api::event.event': ApiEventEvent;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
       'api::landing-section.landing-section': ApiLandingSectionLandingSection;
       'api::schedule-day.schedule-day': ApiScheduleDayScheduleDay;
       'api::schedule.schedule': ApiScheduleSchedule;
+      'api::school-is-item.school-is-item': ApiSchoolIsItemSchoolIsItem;
+      'api::school.school': ApiSchoolSchool;
       'api::speaker.speaker': ApiSpeakerSpeaker;
+      'api::sponsor.sponsor': ApiSponsorSponsor;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

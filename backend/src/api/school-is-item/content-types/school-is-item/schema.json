@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "school_is_items",
+  "info": {
+    "singularName": "school-is-item",
+    "pluralName": "school-is-items",
+    "displayName": "School Is Item"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "credentials": {
+      "type": "string",
+      "required": true
+    },
+    "definition": {
+      "type": "string",
+      "required": true
+    },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "isHidden": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    }
+  }
+}

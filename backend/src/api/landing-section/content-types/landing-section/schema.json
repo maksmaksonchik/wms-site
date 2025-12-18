@@ -23,14 +23,20 @@
       "type": "string"
     },
     "description": {
-      "type": "text"
+      "type": "richtext"
     },
     "blocks": {
       "type": "dynamiczone",
       "components": [
         "blocks.link-card",
         "blocks.call-to-action",
-        "blocks.schedule"
+        "blocks.schedule",
+        "blocks.sponsors-galery",
+        "blocks.school-is-galery",
+        "blocks.link-card-grid",
+        "blocks.image",
+        "blocks.image-with-accordion",
+        "blocks.accordion"
       ]
     }
   }

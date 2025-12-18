@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sponsors",
+  "info": {
+    "singularName": "sponsor",
+    "pluralName": "sponsors",
+    "displayName": "Sponsor"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "level": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "bronze",
+        "silver",
+        "gold"
+      ]
+    },
+    "url": {
+      "type": "string"
+    },
+    "logo": {
+      "type": "component",
+      "component": "shared.themed-image",
+      "repeatable": false,
+      "required": true
+    },
+    "schools": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::school.school",
+      "mappedBy": "sponsors"
+    }
+  }
+}

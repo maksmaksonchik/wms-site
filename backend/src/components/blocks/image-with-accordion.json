@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_blocks_image_with_accordions",
+  "info": {
+    "displayName": "Image With Accordion"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "component",
+      "component": "blocks.image",
+      "repeatable": false,
+      "required": true
+    },
+    "accordion": {
+      "type": "component",
+      "component": "blocks.accordion",
+      "repeatable": false,
+      "required": true
+    },
+    "isReversed": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    }
+  },
+  "config": {}
+}
