@@ -15,8 +15,44 @@
       "type": "string",
       "required": true
     },
+    "type": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "person",
+        "company"
+      ]
+    },
+    "avatar": {
+      "type": "media",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "person"
+          ]
+        }
+      },
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
     "level": {
       "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "company"
+          ]
+        }
+      },
       "required": true,
       "enum": [
         "bronze",
@@ -25,10 +61,30 @@
       ]
     },
     "url": {
-      "type": "string"
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "company"
+          ]
+        }
+      }
     },
     "logo": {
       "type": "component",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "company"
+          ]
+        }
+      },
       "component": "shared.themed-image",
       "repeatable": false,
       "required": true

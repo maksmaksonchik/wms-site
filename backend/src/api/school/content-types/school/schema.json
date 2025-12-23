@@ -29,12 +29,6 @@
       "target": "api::schedule.schedule",
       "inversedBy": "school"
     },
-    "donors": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::donor.donor",
-      "mappedBy": "schools"
-    },
     "sponsors": {
       "type": "relation",
       "relation": "manyToMany",

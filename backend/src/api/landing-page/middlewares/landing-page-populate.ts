@@ -21,9 +21,29 @@ const populate = {
     populate: {
       blocks: {
         on: {
+          "blocks.image-with-accordion": {
+            populate: {
+              image: {
+                populate: { src: { fields: ["url"] } },
+              },
+              accordion: {
+                populate: { items: true },
+              },
+            },
+          },
           "blocks.link-card": true,
 
-          "blocks.call-to-action": true,
+          "blocks.link-card-grid": {
+            populate: {
+              cards: true,
+            },
+          },
+
+          "blocks.call-to-action": {
+            populate: {
+              button: true,
+            },
+          },
 
           "blocks.schedule": {
             populate: {
@@ -32,6 +52,10 @@ const populate = {
               },
             },
           },
+
+          "blocks.school-is-gallery": true,
+
+          "blocks.sponsors-gallery": true,
         },
       },
     },

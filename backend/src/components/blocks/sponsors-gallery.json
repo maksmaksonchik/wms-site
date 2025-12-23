@@ -1,7 +1,7 @@
 {
-  "collectionName": "components_blocks_sponsors_galeries",
+  "collectionName": "components_blocks_sponsors_galleries",
   "info": {
-    "displayName": "Sponsors Galery"
+    "displayName": "Sponsors Gallery"
   },
   "options": {},
   "attributes": {
@@ -17,7 +17,7 @@
       "type": "string",
       "required": true
     },
-    "donorsHeading": {
+    "personalHeading": {
       "type": "string",
       "required": true
     }

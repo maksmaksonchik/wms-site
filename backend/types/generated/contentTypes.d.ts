@@ -430,33 +430,6 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiDonorDonor extends Struct.CollectionTypeSchema {
-  collectionName: 'donors';
-  info: {
-    displayName: 'Donor';
-    pluralName: 'donors';
-    singularName: 'donor';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    avatar: Schema.Attribute.Media<'images'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::donor.donor'> &
-      Schema.Attribute.Private;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    schools: Schema.Attribute.Relation<'manyToMany', 'api::school.school'>;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   collectionName: 'events';
   info: {
@@ -553,12 +526,10 @@ export interface ApiLandingSectionLandingSection
         'blocks.link-card',
         'blocks.call-to-action',
         'blocks.schedule',
-        'blocks.sponsors-galery',
-        'blocks.school-is-galery',
+        'blocks.sponsors-gallery',
+        'blocks.school-is-gallery',
         'blocks.link-card-grid',
-        'blocks.image',
         'blocks.image-with-accordion',
-        'blocks.accordion',
       ]
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -693,7 +664,6 @@ export interface ApiSchoolSchool extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    donors: Schema.Attribute.Relation<'manyToMany', 'api::donor.donor'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -756,6 +726,7 @@ export interface ApiSponsorSponsor extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    avatar: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -772,6 +743,8 @@ export interface ApiSponsorSponsor extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     schools: Schema.Attribute.Relation<'manyToMany', 'api::school.school'>;
+    type: Schema.Attribute.Enumeration<['person', 'company']> &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1289,7 +1262,6 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
-      'api::donor.donor': ApiDonorDonor;
       'api::event.event': ApiEventEvent;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
       'api::landing-section.landing-section': ApiLandingSectionLandingSection;

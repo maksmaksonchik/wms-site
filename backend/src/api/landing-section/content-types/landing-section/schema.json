@@ -31,12 +31,10 @@
         "blocks.link-card",
         "blocks.call-to-action",
         "blocks.schedule",
-        "blocks.sponsors-galery",
-        "blocks.school-is-galery",
+        "blocks.sponsors-gallery",
+        "blocks.school-is-gallery",
         "blocks.link-card-grid",
-        "blocks.image",
-        "blocks.image-with-accordion",
-        "blocks.accordion"
+        "blocks.image-with-accordion"
       ]
     }
   }

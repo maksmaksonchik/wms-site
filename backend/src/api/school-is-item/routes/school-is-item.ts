@@ -2,6 +2,15 @@
  * school-is-item router
  */
 
-import { factories } from '@strapi/strapi';
+import { factories } from "@strapi/strapi";
 
-export default factories.createCoreRouter('api::school-is-item.school-is-item');
+export default factories.createCoreRouter(
+  "api::school-is-item.school-is-item",
+  {
+    config: {
+      find: {
+        middlewares: ["api::school-is-item.school-is-items-populate"],
+      },
+    },
+  }
+);

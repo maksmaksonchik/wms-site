@@ -99,10 +99,10 @@ export interface BlocksSchedule extends Struct.ComponentSchema {
   };
 }
 
-export interface BlocksSchoolIsGalery extends Struct.ComponentSchema {
-  collectionName: 'components_blocks_school_is_galeries';
+export interface BlocksSchoolIsGallery extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_school_is_galleries';
   info: {
-    displayName: 'School Is Galery';
+    displayName: 'School Is Gallery';
   };
   attributes: {
     view: Schema.Attribute.Enumeration<['carousel']> &
@@ -111,15 +111,15 @@ export interface BlocksSchoolIsGalery extends Struct.ComponentSchema {
   };
 }
 
-export interface BlocksSponsorsGalery extends Struct.ComponentSchema {
-  collectionName: 'components_blocks_sponsors_galeries';
+export interface BlocksSponsorsGallery extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_sponsors_galleries';
   info: {
-    displayName: 'Sponsors Galery';
+    displayName: 'Sponsors Gallery';
   };
   attributes: {
     bronzeHeading: Schema.Attribute.String & Schema.Attribute.Required;
-    donorsHeading: Schema.Attribute.String & Schema.Attribute.Required;
     goldHeading: Schema.Attribute.String & Schema.Attribute.Required;
+    personalHeading: Schema.Attribute.String & Schema.Attribute.Required;
     silverHeading: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
@@ -230,8 +230,8 @@ declare module '@strapi/strapi' {
       'blocks.link-card': BlocksLinkCard;
       'blocks.link-card-grid': BlocksLinkCardGrid;
       'blocks.schedule': BlocksSchedule;
-      'blocks.school-is-galery': BlocksSchoolIsGalery;
-      'blocks.sponsors-galery': BlocksSponsorsGalery;
+      'blocks.school-is-gallery': BlocksSchoolIsGallery;
+      'blocks.sponsors-gallery': BlocksSponsorsGallery;
       'layout.footer': LayoutFooter;
       'layout.header': LayoutHeader;
       'layout.hero': LayoutHero;
