@@ -1,26 +1,28 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import type { ThemedImage as ThemedImageType } from "@/types/shared.types";
 
-type ThemedImageProps = {
-  src: {
-    light_theme: string;
-    dark_theme: string;
-  };
+type ThemedImageProps = ThemedImageType & {
   alt: string;
   className?: string;
 };
 
-const ThemedImage = ({ src, alt, className }: ThemedImageProps) => {
+const ThemedImage = ({
+  lightTheme,
+  darkTheme,
+  alt,
+  className,
+}: ThemedImageProps) => {
   return (
     <>
       <Image
         className={cn("block dark:hidden", className)}
-        src={src.light_theme}
+        src={lightTheme.url}
         alt={alt}
         fill
       />
       <Image
-        src={src.dark_theme}
+        src={darkTheme.url}
         alt={alt}
         className={cn("hidden dark:block", className)}
         fill

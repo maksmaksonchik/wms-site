@@ -1,12 +1,4 @@
-import { Schedule } from "@/types/schedule.types";
-
-/**
- * Парсит дату из строки формата YYYY-MM-DD
- */
-function parseDate(dateString: string): Date {
-  const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
+import { ScheduleData } from "@/types/schedule.types";
 
 /**
  * Форматирует дату в строку формата YYYY-MM-DD
@@ -28,14 +20,6 @@ function addDays(date: Date, days: number): Date {
 }
 
 /**
- * Вычисляет разницу в днях между двумя датами
- */
-function getDaysDifference(date1: Date, date2: Date): number {
-  const diffTime = date2.getTime() - date1.getTime();
-  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-}
-
-/**
  * Изменяет даты в расписании на основе offset.
  * @param schedule - исходное расписание
  * @param mockOffset - смещение дат:
@@ -45,42 +29,30 @@ function getDaysDifference(date1: Date, date2: Date): number {
  * @returns новое расписание с измененными датами
  */
 export function getScheduleMockWithDates(
-  schedule: Schedule,
+  scheduleData: ScheduleData,
   mockOffset: number
-): Schedule {
-  if (!schedule || schedule.length === 0) {
-    return schedule;
+): ScheduleData {
+  const scheduleDays = scheduleData.scheduleDays;
+
+  if (!scheduleDays || scheduleDays.length === 0) {
+    return {
+      scheduleDays,
+    };
   }
 
-  // Получаем первую дату из расписания
-  const firstOriginalDate = parseDate(schedule[0].date);
-
-  // Вычисляем новую первую дату (сегодня + offset)
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Обнуляем время для точности
-  const newFirstDate = addDays(today, mockOffset);
+  today.setHours(0, 0, 0, 0);
 
-  // Вычисляем разницу в днях
-  const daysDiff = getDaysDifference(firstOriginalDate, newFirstDate);
+  const firstDate = addDays(today, mockOffset);
 
-  // Создаем новое расписание с измененными датами
-  return schedule.map((daySchedule) => {
-    const originalDayDate = parseDate(daySchedule.date);
-    const newDayDate = addDays(originalDayDate, daysDiff);
+  return {
+    scheduleDays: scheduleDays.map((scheduleDay, index) => {
+      const newDayDate = addDays(firstDate, index);
 
-    return {
-      ...daySchedule,
-      date: formatDate(newDayDate),
-      events: daySchedule.events.map((event) => {
-        const originalEventDate = parseDate(event.date);
-        const newEventDate = addDays(originalEventDate, daysDiff);
-
-        // Возвращаем событие с измененной датой, но НЕ изменяем поле image
-        return {
-          ...event,
-          date: formatDate(newEventDate),
-        };
-      }),
-    };
-  });
+      return {
+        ...scheduleDay,
+        date: formatDate(newDayDate),
+      };
+    }),
+  };
 }

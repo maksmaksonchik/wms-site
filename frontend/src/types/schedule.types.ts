@@ -1,35 +1,50 @@
+import { StrapiImage } from "./shared.types";
+
 export type Event = {
-  /** Дата события (YYYY-MM-DD)*/
-  date: string;
-
-  /** Время начала события (HH:MM)*/
-  startTime: string;
-
-  /** Время окончания события (HH:MM)*/
-  endTime?: string;
+  id: number;
+  documentId: string;
 
   /** Название события */
   title: string;
 
-  /** Ссылка на изображение события */
-  image?: string;
+  /** Является ли лекцией */
+  isLecture: boolean;
 
-  /** Описание события */
+  /** Время начала события (HH:MM:SS)*/
+  start: string;
+
+  /** Время окончания события (HH:MM:SS)*/
+  end: string;
+
+  /** Если событие происходит уже после полуночи, но принадлежит к дню — true */
+  isAfterMidnight: boolean;
+
+  /** Спикер */
+  speaker?: Speaker | null;
+
+  /** Картинка события */
+  image?: StrapiImage;
+
+  /** Описание события в формате markdown */
   description?: string;
-
-  /** Имя спикера */
-  speaker?: string;
-
-  /** Регалии спикера */
-  speakerCredentials?: string;
 };
 
-export type DaySchedule = {
+type Speaker = {
+  /** Имя спикера или название компании */
+  name: string;
+
+  /** Регалии */
+  credentials?: string | null;
+};
+
+export type ScheduleDay = {
   /** Дата (YYYY-MM-DD)*/
   date: string;
 
   /** События в этот день */
-  events: Event[];
+  events?: Event[] | null;
 };
 
-export type Schedule = DaySchedule[];
+export type ScheduleData = {
+  scheduleDays?: ScheduleDay[] | null;
+};
