@@ -1,12 +1,4 @@
 export const getStrapiImageUrl = (url: string): string => {
-  const baseURL = process.env.ASSETS_BASE_URL;
+  const baseURL = process.env.NEXT_PUBLIC_ASSETS_BASE_URL;
   return `${baseURL}${url}`;
-};
-
-export const strapiImageLoader = ({ src }: { src: string }) => {
-  if (src.startsWith("http://") || src.startsWith("https://")) {
-    return src;
-  }
-
-  return getStrapiImageUrl(src);
 };

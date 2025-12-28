@@ -22,6 +22,8 @@ const CardLayout = ({ sponsor, variant }: Props) => {
           {...sponsor.logo}
           alt={sponsor.name}
           className="object-contain pointer-events-none select-none"
+          // TODO: вынести, тут размеры для галереи спонсоров
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
         />
       </div>
     </CardHeader>

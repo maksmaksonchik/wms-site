@@ -14,6 +14,7 @@ const ImageWithAccordion = ({
       cols={2}
       className={isReversed ? "flex-row-reverse" : ""}
     >
+      {/* eslint-disable-next-line jsx-a11y/alt-text */}
       <Image {...image} />
       <Accordion {...accordion} />
     </Grid>

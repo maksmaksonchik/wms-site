@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { getStrapiImageUrl } from "@/lib/image-utils";
 
 const getInitials = (name: string) =>
   name
@@ -17,7 +18,10 @@ const PersonCard = ({ avatar, name }: PersonCardProps) => {
     <Card key={name} className="p-0">
       <CardHeader className="flex flex-row items-center gap-4 py-4 px-6">
         <Avatar className="h-20 w-20">
-          <AvatarImage src={avatar} alt={name} />
+          <AvatarImage
+            src={avatar ? getStrapiImageUrl(avatar) : avatar}
+            alt={name}
+          />
           <AvatarFallback>{getInitials(name)}</AvatarFallback>
         </Avatar>
         <CardTitle className="text-lg">{name}</CardTitle>

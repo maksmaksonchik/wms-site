@@ -48,7 +48,11 @@ const ScheduleUI = ({ scheduleDays }: ScheduleData) => {
               <Empty text="В этот день нет событий" />
             ) : (
               day.events.map((event) => (
-                <EventCard key={`${event.date}-${event.start}`} event={event} />
+                <EventCard
+                  key={`${day.date}-${event.start}`}
+                  event={event}
+                  date={day.date}
+                />
               ))
             )}
           </div>

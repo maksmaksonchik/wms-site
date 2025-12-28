@@ -6,5 +6,5 @@ export type Hero = {
   badge: string;
   dates?: string | null;
   location?: Link | null;
-  image: StrapiImage;
+  background: StrapiImage;
 };

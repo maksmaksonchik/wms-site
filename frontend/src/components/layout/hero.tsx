@@ -3,21 +3,25 @@ import { MapPin } from "lucide-react";
 import Container from "@/components/container";
 import A from "@/components/typography/a";
 import { Hero as HeroData } from "@/types/layout/hero.types";
+import ImageUI from "@/components/ui/image-ui";
 
 type HeroProps = {
   data: HeroData;
 };
 
 const Hero = ({ data }: HeroProps) => {
-  const { heading, badge, dates, location } = data;
+  const { heading, badge, dates, location, background } = data;
 
   return (
-    <section
-      id="hero"
-      className="relative flex items-end min-h-screen w-full bg-cover bg-center"
-      //TODO: Заменить на изображение из данных
-      style={{ backgroundImage: "url('/bg.jpg')" }}
-    >
+    <section id="hero" className="relative flex items-end min-h-screen w-full">
+      <ImageUI
+        src={background.url}
+        alt=""
+        fill
+        sizes="100vw"
+        className="object-cover z-0"
+        priority
+      />
       {/* Hero всегда отображается темным, кроме Badge, поэтому добавляем dark класс */}
       <div className="dark absolute inset-0 bg-linear-to-tr from-background/95 via-background/60 to-background/20" />
       <Container className="relative z-10 flex flex-col gap-6 pb-20 pt-32">

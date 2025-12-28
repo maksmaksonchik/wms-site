@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import type { SchoolIsItem } from "@/types/school-is-item.types";
+import { getStrapiImageUrl } from "@/lib/image-utils";
 
 const QuoteCard = ({
   definition,
@@ -15,9 +16,12 @@ const QuoteCard = ({
   return (
     <Card className="flex flex-col h-full p-4">
       <div className="relative aspect-square overflow-hidden rounded-md">
-        {/* TODO: Починить картинки */}
         <Avatar className="size-full rounded-none">
-          <AvatarImage src={avatar.url} alt={name} className="object-cover" />
+          <AvatarImage
+            src={getStrapiImageUrl(avatar.url)}
+            alt={name}
+            className="object-cover"
+          />
           <AvatarFallback className="rounded-none" />
         </Avatar>
       </div>

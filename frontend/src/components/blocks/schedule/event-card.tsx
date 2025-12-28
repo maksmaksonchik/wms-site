@@ -1,15 +1,15 @@
-import Image from "next/image";
+import Image from "@/components/ui/image-ui";
 import { Card } from "@/components/ui/card";
 import { Event } from "@/types/schedule.types";
 import Markdown from "@/components/typography/markdown";
 
-const EventCard = ({ event }: { event: Event }) => {
+const EventCard = ({ event, date }: { event: Event; date: string }) => {
   return (
     <Card className="p-6">
       {/* Время и заголовок вверху на всю ширину */}
       <div className="text-lg font-semibold">
         <div className="mb-2">
-          <time dateTime={`${event.date}T${event.start}`}>
+          <time dateTime={`${date}T${event.start}`}>
             {event.start.slice(0, -3)}
           </time>
         </div>
@@ -22,11 +22,11 @@ const EventCard = ({ event }: { event: Event }) => {
           {/* Картинка: на мобильных полная ширина, на десктопе слева */}
           {event.image && (
             <div className="relative w-full aspect-video rounded-lg overflow-hidden md:max-w-[33%] md:shrink-0 sm:max-w-[60%] mx-auto">
-              {/* TODO: починить картинки  */}
               <Image
                 src={event.image.url}
                 alt={event.title}
                 fill
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 60vw, 33vw"
                 className="object-cover"
               />
             </div>
