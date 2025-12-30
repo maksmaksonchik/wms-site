@@ -22,14 +22,17 @@ const SchoolIsGallery = async () => {
       className="mx-auto w-3/4 sm:w-[90%] lg:w-full"
     >
       <CarouselContent>
-        {items.map((item, index) => (
-          <CarouselItem
-            key={index}
-            className="basis-full sm:basis-1/3 lg:basis-1/4"
-          >
-            <QuoteCard {...item} />
-          </CarouselItem>
-        ))}
+        {items.map(
+          (item, index) =>
+            !item.isHidden && (
+              <CarouselItem
+                key={index}
+                className="basis-full sm:basis-1/3 lg:basis-1/4"
+              >
+                <QuoteCard {...item} />
+              </CarouselItem>
+            )
+        )}
       </CarouselContent>
       <CarouselPrevious className="cursor-pointer" />
       <CarouselNext className="cursor-pointer" />
