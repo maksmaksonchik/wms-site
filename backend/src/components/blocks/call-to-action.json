@@ -14,7 +14,7 @@
     },
     "button": {
       "type": "component",
-      "component": "shared.button",
+      "component": "shared.link",
       "repeatable": false,
       "required": true
     }

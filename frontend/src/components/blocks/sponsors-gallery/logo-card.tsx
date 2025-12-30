@@ -2,6 +2,7 @@ import { CompanySponsor } from "@/types/sponsor.types";
 import { Card, CardHeader } from "../../ui/card";
 import ThemedImage from "../../ui/themed-image";
 import { cn } from "@/lib/utils";
+import Link from "@/components/core/link";
 
 type Props = {
   sponsor: CompanySponsor;
@@ -34,14 +35,12 @@ const LogoCard = ({ sponsor, variant = "default" }: Props) => {
   return (
     <Card key={sponsor.name} className="p-0 overflow-hidden">
       {sponsor.url ? (
-        <a
+        <Link
           href={sponsor.url}
-          target="_blank"
-          rel="noopener noreferrer"
           className="w-full h-full cursor-pointer hover:bg-accent transition"
         >
           <CardLayout sponsor={sponsor} variant={variant} />
-        </a>
+        </Link>
       ) : (
         <CardLayout sponsor={sponsor} variant={variant} />
       )}

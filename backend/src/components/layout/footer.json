@@ -11,7 +11,7 @@
     },
     "link": {
       "type": "component",
-      "component": "shared.text-link",
+      "component": "shared.link",
       "repeatable": false
     }
   },

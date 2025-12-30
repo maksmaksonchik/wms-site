@@ -23,7 +23,7 @@ export interface BlocksCallToAction extends Struct.ComponentSchema {
     displayName: 'Call To Action';
   };
   attributes: {
-    button: Schema.Attribute.Component<'shared.button', false> &
+    button: Schema.Attribute.Component<'shared.link', false> &
       Schema.Attribute.Required;
     description: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
@@ -131,7 +131,7 @@ export interface LayoutFooter extends Struct.ComponentSchema {
   };
   attributes: {
     copyright: Schema.Attribute.String & Schema.Attribute.Required;
-    link: Schema.Attribute.Component<'shared.text-link', false>;
+    link: Schema.Attribute.Component<'shared.link', false>;
   };
 }
 
@@ -141,7 +141,7 @@ export interface LayoutHeader extends Struct.ComponentSchema {
     displayName: 'Header';
   };
   attributes: {
-    navLinks: Schema.Attribute.Component<'shared.nav-link', true>;
+    navLinks: Schema.Attribute.Component<'shared.link', true>;
   };
 }
 
@@ -155,7 +155,7 @@ export interface LayoutHero extends Struct.ComponentSchema {
     badge: Schema.Attribute.String & Schema.Attribute.Required;
     dates: Schema.Attribute.String;
     heading: Schema.Attribute.String & Schema.Attribute.Required;
-    location: Schema.Attribute.Component<'shared.text-link', false>;
+    location: Schema.Attribute.Component<'shared.link', false>;
   };
 }
 
@@ -170,41 +170,13 @@ export interface SharedAccordionItem extends Struct.ComponentSchema {
   };
 }
 
-export interface SharedButton extends Struct.ComponentSchema {
-  collectionName: 'components_shared_buttons';
+export interface SharedLink extends Struct.ComponentSchema {
+  collectionName: 'components_shared_links';
   info: {
-    displayName: 'Button';
+    displayName: 'Link';
   };
   attributes: {
     href: Schema.Attribute.String & Schema.Attribute.Required;
-    isInternal: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<false>;
-    label: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
-
-export interface SharedNavLink extends Struct.ComponentSchema {
-  collectionName: 'components_shared_nav_links';
-  info: {
-    displayName: 'Nav Link';
-  };
-  attributes: {
-    href: Schema.Attribute.String & Schema.Attribute.Required;
-    label: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
-
-export interface SharedTextLink extends Struct.ComponentSchema {
-  collectionName: 'components_shared_text_links';
-  info: {
-    displayName: 'Text Link';
-  };
-  attributes: {
-    href: Schema.Attribute.String & Schema.Attribute.Required;
-    isInternal: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<false>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
@@ -236,9 +208,7 @@ declare module '@strapi/strapi' {
       'layout.header': LayoutHeader;
       'layout.hero': LayoutHero;
       'shared.accordion-item': SharedAccordionItem;
-      'shared.button': SharedButton;
-      'shared.nav-link': SharedNavLink;
-      'shared.text-link': SharedTextLink;
+      'shared.link': SharedLink;
       'shared.themed-image': SharedThemedImage;
     }
   }

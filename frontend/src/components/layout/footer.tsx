@@ -19,11 +19,7 @@ const Footer = ({ data }: FooterProps) => {
         </span>
 
         {link && (
-          <A
-            href={link?.href}
-            internal={link?.isInternal}
-            className="text-muted-foreground"
-          >
+          <A href={link?.href} className="text-muted-foreground">
             {link.label}
           </A>
         )}

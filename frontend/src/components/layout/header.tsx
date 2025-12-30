@@ -20,6 +20,7 @@ import { siteConfig } from "@/config/site.config";
 import { ThemeToggle } from "@/components/theme-toggle";
 import WmsLogo from "@/components/ui/wms-logo";
 import Container from "@/components/container";
+import Link from "@/components/core/link";
 
 const MenuIcon = () => {
   return (
@@ -56,14 +57,14 @@ const Header = ({ data }: HeaderProps) => {
   return (
     <header className="fixed inset-x-0 z-20 border-b border-border/40 bg-background/80 backdrop-blur">
       <Container className="flex items-center justify-between gap-4 py-4">
-        <a
-          href="#hero"
+        <Link
+          href="/"
           onClick={(e) => handleLinkClick(e)}
           className="flex items-center gap-2 transition hover:text-primary text-lg font-semibold tracking-tight"
         >
           <WmsLogo variant="primary" className="w-[1.5em] h-[1.5em]" />
           <span>{siteConfig.title}</span>
-        </a>
+        </Link>
 
         {/* Десктопное меню */}
         <div className="hidden md:flex items-center gap-2">
@@ -73,13 +74,13 @@ const Header = ({ data }: HeaderProps) => {
                 {navLinks.map((link) => (
                   <NavigationMenuItem key={link.id}>
                     <NavigationMenuLink asChild>
-                      <a
+                      <Link
                         href={link.href}
                         onClick={(e) => handleLinkClick(e)}
                         className="font-medium whitespace-nowrap"
                       >
                         {link.label}
-                      </a>
+                      </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}
@@ -109,14 +110,14 @@ const Header = ({ data }: HeaderProps) => {
               >
                 <nav>
                   {navLinks.map((link) => (
-                    <a
+                    <Link
                       key={link.id}
                       href={`#${link.id}`}
                       onClick={(e) => handleLinkClick(e)}
                       className="block p-3 text-lg font-medium rounded-md transition hover:bg-accent hover:text-primary"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   ))}
                 </nav>
               </PopoverContent>

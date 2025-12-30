@@ -1,3 +1,4 @@
+import Link from "@/components/core/link";
 import { Button } from "@/components/ui/button";
 import type { CallToAction as CallToActionProps } from "@/types/blocks";
 
@@ -9,9 +10,7 @@ const CallToAction = ({ title, description, button }: CallToActionProps) => {
         {description && <p className="text-muted-foreground">{description}</p>}
       </div>
       <Button size="lg" asChild className="shrink-0">
-        <a href={button.href} target="_blank" rel="noopener noreferrer">
-          {button.label}
-        </a>
+        <Link href={button.href}>{button.label}</Link>
       </Button>
     </div>
   );

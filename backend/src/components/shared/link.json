@@ -1,7 +1,7 @@
 {
-  "collectionName": "components_shared_text_links",
+  "collectionName": "components_shared_links",
   "info": {
-    "displayName": "Text Link"
+    "displayName": "Link"
   },
   "options": {},
   "attributes": {
@@ -12,11 +12,6 @@
     "href": {
       "type": "string",
       "required": true
-    },
-    "isInternal": {
-      "type": "boolean",
-      "required": true,
-      "default": false
     }
   },
   "config": {}

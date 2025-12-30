@@ -8,10 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "@/components/core/link";
 
 const LinkCard = ({ href, title, subtitle }: LinkCardProps) => {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="group">
+    <Link href={href} className="group">
       <Card className="transition group-hover:bg-accent h-full justify-center">
         <CardHeader className="gap-0 space-y-2">
           <CardTitle className="text-lg flex items-center gap-1 group-hover:underline">
@@ -23,7 +24,7 @@ const LinkCard = ({ href, title, subtitle }: LinkCardProps) => {
           )}
         </CardHeader>
       </Card>
-    </a>
+    </Link>
   );
 };
 
