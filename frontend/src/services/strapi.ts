@@ -59,12 +59,7 @@ export class Strapi {
     return json.data;
   }
 
-  async getSponsors(): Promise<{
-    gold: CompanySponsor[];
-    silver: CompanySponsor[];
-    bronze: CompanySponsor[];
-    personal: PersonSponsor[];
-  }> {
+  async getSponsors(): Promise<SponsorsData> {
     const response = await this.strapiClient.fetch(this.slugs.sponsors);
     const json = await response.json();
 
