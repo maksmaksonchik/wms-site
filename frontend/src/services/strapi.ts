@@ -9,7 +9,7 @@ export class Strapi {
 
   private readonly baseURL: string = process.env.API_BASE_URL || "";
 
-  private readonly slugs: Record<string, string> = {
+  private readonly slugs = {
     landingPage: process.env.LANDING_PAGE_SLUG || "",
     schedule: process.env.SCHEDULE_SLUG || "",
     schoolIs: process.env.SCHOOL_IS_SLUG || "",
@@ -29,53 +29,52 @@ export class Strapi {
 
     this.strapiClient = strapiClient({
       baseURL: this.baseURL,
-      //   auth: process.env.STRAPI_ADMIN_TOKEN,
     });
   }
 
-  async getLandingData(): Promise<LandingPage> {
-    const response = await this.strapiClient.fetch(this.slugs.landingPage);
+  private async getData(slug: string) {
+    const response = await this.strapiClient.fetch(slug, {
+      cache: "no-store",
+    });
+
     const json = await response.json();
+
     return json.data;
+  }
+
+  async getLandingData(): Promise<LandingPage> {
+    return await this.getData(this.slugs.landingPage);
   }
 
   async getSchedule(documentId: string): Promise<ScheduleData> {
-    const response = await this.strapiClient.fetch(
-      this.slugs.schedule + `/${documentId}`
-    );
-
-    const json = await response.json();
-    return json.data;
+    return await this.getData(this.slugs.schedule + `/${documentId}`);
   }
 
   async getSchoolIs(): Promise<SchoolIsItem[]> {
-    const response = await this.strapiClient.fetch(this.slugs.schoolIs);
-    const json = await response.json();
-    return json.data;
+    return await this.getData(this.slugs.schoolIs);
   }
 
   async getSponsors(): Promise<SponsorsData> {
-    const response = await this.strapiClient.fetch(this.slugs.sponsors);
-    const json = await response.json();
+    const data = await this.getData(this.slugs.sponsors);
 
-    const sponsorsData: SponsorsData = {
+    const result: SponsorsData = {
       gold: [],
       silver: [],
       bronze: [],
       personal: [],
     };
 
-    json.data.forEach((sponsor: Sponsor) => {
+    data.forEach((sponsor: Sponsor) => {
       if (sponsor.type === "person") {
-        sponsorsData.personal.push(sponsor);
+        result.personal.push(sponsor);
       }
 
       if (sponsor.type === "company") {
-        sponsorsData[sponsor.level].push(sponsor);
+        result[sponsor.level].push(sponsor);
       }
     });
 
-    return sponsorsData;
+    return result;
   }
 }
 
