@@ -6,7 +6,7 @@ const LinkCardGrid = ({ cards }: LinkCardGridProps) => {
   return (
     <Grid>
       {cards.map((card, index) => (
-        <LinkCard key={index} {...card} />
+        <LinkCard key={index} __component="blocks.link-card" {...card} />
       ))}
     </Grid>
   );

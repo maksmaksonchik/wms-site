@@ -1,20 +1,20 @@
-import { Schedule } from "@/types/schedule.types";
+import { ScheduleDay } from "@/types/schedule.types";
 import { getDateString } from "./getDateString";
 
-export const getCurrantDayTab = (schedule: Schedule): string => {
+export const getCurrantDayTab = (scheduleDays: ScheduleDay[]): string => {
   const today = new Date();
 
-  const found = schedule.find((day) => day.date === getDateString(today));
+  const found = scheduleDays.find((day) => day.date === getDateString(today));
 
   if (found) {
     return found.date;
   }
 
-  const firstScheduleDay = new Date(schedule[0].date);
+  const firstScheduleDay = new Date(scheduleDays[0].date);
 
   if (today.getTime() > firstScheduleDay.getTime()) {
-    return schedule[schedule.length - 1].date;
+    return scheduleDays[scheduleDays.length - 1].date;
   }
 
-  return schedule[0].date;
+  return scheduleDays[0].date;
 };

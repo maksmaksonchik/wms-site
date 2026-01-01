@@ -1,9 +1,4 @@
-import {
-  PersonSponsor,
-  CompanySponsor,
-  Sponsor,
-  SponsorsData,
-} from "@/types/sponsor.types";
+import { Sponsor, SponsorsData } from "@/types/sponsor.types";
 import { LandingPage } from "@/types/landing-page.types";
 import { ScheduleData } from "@/types/schedule.types";
 import { SchoolIsItem } from "@/types/school-is-item.types";
