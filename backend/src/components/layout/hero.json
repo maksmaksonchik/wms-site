@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_layout_heroes",
+  "info": {
+    "displayName": "Hero"
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "required": true
+    },
+    "badge": {
+      "type": "string",
+      "required": true
+    },
+    "dates": {
+      "type": "string"
+    },
+    "location": {
+      "type": "component",
+      "component": "shared.text-link",
+      "repeatable": false
+    },
+    "background": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

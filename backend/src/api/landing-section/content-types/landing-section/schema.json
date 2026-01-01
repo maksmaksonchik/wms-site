@@ -1,0 +1,41 @@
+{
+  "kind": "collectionType",
+  "collectionName": "landing_sections",
+  "info": {
+    "singularName": "landing-section",
+    "pluralName": "landing-sections",
+    "displayName": "Landing Section"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "required": true
+    },
+    "badge": {
+      "type": "string",
+      "required": true
+    },
+    "anchorId": {
+      "type": "string"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "blocks": {
+      "type": "dynamiczone",
+      "components": [
+        "blocks.link-card",
+        "blocks.call-to-action",
+        "blocks.schedule",
+        "blocks.sponsors-gallery",
+        "blocks.school-is-gallery",
+        "blocks.link-card-grid",
+        "blocks.image-with-accordion"
+      ]
+    }
+  }
+}

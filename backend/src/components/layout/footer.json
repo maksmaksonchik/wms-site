@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_layout_footers",
+  "info": {
+    "displayName": "Footer"
+  },
+  "options": {},
+  "attributes": {
+    "copyright": {
+      "type": "string",
+      "required": true
+    },
+    "link": {
+      "type": "component",
+      "component": "shared.text-link",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

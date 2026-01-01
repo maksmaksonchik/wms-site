@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_shared_themed_images",
+  "info": {
+    "displayName": "Themed Image"
+  },
+  "options": {},
+  "attributes": {
+    "lightTheme": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "darkTheme": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,99 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sponsors",
+  "info": {
+    "singularName": "sponsor",
+    "pluralName": "sponsors",
+    "displayName": "Sponsor"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "person",
+        "company"
+      ]
+    },
+    "avatar": {
+      "type": "media",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "person"
+          ]
+        }
+      },
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "level": {
+      "type": "enumeration",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "company"
+          ]
+        }
+      },
+      "required": true,
+      "enum": [
+        "bronze",
+        "silver",
+        "gold"
+      ]
+    },
+    "url": {
+      "type": "string",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "company"
+          ]
+        }
+      }
+    },
+    "logo": {
+      "type": "component",
+      "conditions": {
+        "visible": {
+          "==": [
+            {
+              "var": "type"
+            },
+            "company"
+          ]
+        }
+      },
+      "component": "shared.themed-image",
+      "repeatable": false,
+      "required": true
+    },
+    "schools": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::school.school",
+      "mappedBy": "sponsors"
+    }
+  }
+}

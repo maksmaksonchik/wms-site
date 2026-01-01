@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "events",
+  "info": {
+    "singularName": "event",
+    "pluralName": "events",
+    "displayName": "Event"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "isLecture": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "start": {
+      "type": "time",
+      "required": true
+    },
+    "end": {
+      "type": "time",
+      "required": true
+    },
+    "isAfterMidnight": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "scheduleDays": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::schedule-day.schedule-day",
+      "inversedBy": "events"
+    },
+    "speaker": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::speaker.speaker",
+      "inversedBy": "events"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "description": {
+      "type": "richtext"
+    }
+  }
+}

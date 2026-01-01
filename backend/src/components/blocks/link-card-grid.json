@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_blocks_link_card_grids",
+  "info": {
+    "displayName": "Link Card Grid"
+  },
+  "options": {},
+  "attributes": {
+    "cards": {
+      "type": "component",
+      "component": "blocks.link-card",
+      "repeatable": true,
+      "required": true,
+      "min": 2
+    }
+  },
+  "config": {}
+}

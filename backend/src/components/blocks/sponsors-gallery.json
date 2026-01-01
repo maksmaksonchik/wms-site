@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_blocks_sponsors_galleries",
+  "info": {
+    "displayName": "Sponsors Gallery"
+  },
+  "options": {},
+  "attributes": {
+    "goldHeading": {
+      "type": "string",
+      "required": true
+    },
+    "silverHeading": {
+      "type": "string",
+      "required": true
+    },
+    "bronzeHeading": {
+      "type": "string",
+      "required": true
+    },
+    "personalHeading": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {}
+}

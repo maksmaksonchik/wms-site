@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_blocks_school_is_galleries",
+  "info": {
+    "displayName": "School Is Gallery"
+  },
+  "options": {},
+  "attributes": {
+    "view": {
+      "type": "enumeration",
+      "required": true,
+      "default": "carousel",
+      "enum": [
+        "carousel"
+      ]
+    }
+  },
+  "config": {}
+}

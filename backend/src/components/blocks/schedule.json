@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_blocks_schedules",
+  "info": {
+    "displayName": "Schedule"
+  },
+  "options": {},
+  "attributes": {
+    "schedule": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::schedule.schedule"
+    }
+  },
+  "config": {}
+}
