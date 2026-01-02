@@ -3,6 +3,7 @@ import { LandingPage } from "@/types/landing-page.types";
 import { ScheduleData } from "@/types/schedule.types";
 import { SchoolIsItem } from "@/types/school-is-item.types";
 import { strapi as strapiClient, StrapiClient } from "@strapi/client";
+import { getSortedSchedule } from "./utils/getSortedSchedule";
 
 export class Strapi {
   private readonly strapiClient: StrapiClient;
@@ -47,7 +48,11 @@ export class Strapi {
   }
 
   async getSchedule(documentId: string): Promise<ScheduleData> {
-    return await this.getData(this.slugs.schedule + `/${documentId}`);
+    const scheduleData: ScheduleData = await this.getData(
+      this.slugs.schedule + `/${documentId}`
+    );
+
+    return getSortedSchedule(scheduleData);
   }
 
   async getSchoolIs(): Promise<SchoolIsItem[]> {
