@@ -2,45 +2,44 @@ import { LandingPage } from "@/types/landing-page.types";
 
 export const landingData: LandingPage = {
   header: {
-    id: 23,
+    id: 29,
     navLinks: [
       {
-        id: 108,
+        id: 17,
         label: "Расписание",
         href: "#program",
       },
       {
-        id: 109,
+        id: 18,
         label: "Участники",
         href: "#members",
       },
       {
-        id: 110,
+        id: 19,
         label: "Как добраться",
         href: "#directions",
       },
       {
-        id: 111,
+        id: 20,
         label: "Спонсоры",
         href: "#sponsors",
       },
       {
-        id: 112,
+        id: 21,
         label: "Прошедшие школы",
         href: "#past",
       },
     ],
   },
   hero: {
-    id: 15,
+    id: 21,
     heading: "Зимняя математическая школа",
-    badge: "ЗМШ-60",
-    dates: null,
+    badge: "ЗМШ-59",
+    dates: "29 января — 5 февраля, 2025",
     location: {
-      id: 40,
+      id: 22,
       label: "ФОК Гагаринский",
       href: "https://fokgagarin.ru/contacts/",
-      isInternal: false,
     },
     background: {
       id: 2,
@@ -66,14 +65,12 @@ export const landingData: LandingPage = {
               title: "Телеграм-канал школы",
               subtitle: "Новости ЗМШ",
               href: "https://t.me/zmsh_dmm_GetYear",
-              isInternal: false,
             },
             {
               id: 18,
               title: "Правила ЗМШ",
               subtitle: "Что нужно знать перед поездкой",
               href: "https://buildin.ai/share/6c9cfa4b-33f1-4554-88e5-dad27ce7941b",
-              isInternal: false,
             },
           ],
         },
@@ -98,7 +95,7 @@ export const landingData: LandingPage = {
       ],
     },
     {
-      id: 11,
+      id: 28,
       documentId: "g976c8h8m6n0fcjypijdk3q1",
       heading: "Стать участником",
       badge: "Участники",
@@ -107,23 +104,21 @@ export const landingData: LandingPage = {
       blocks: [
         {
           __component: "blocks.link-card",
-          id: 10,
+          id: 21,
           title: "Кто едет?",
           subtitle: "Список ЗМШат 2026",
           href: "https://buildin.ai/share/696d3aee-85e7-4e62-b004-cdf6a4013eba",
-          isInternal: false,
         },
         {
           __component: "blocks.call-to-action",
-          id: 2,
+          id: 5,
           title: "Приезжайте на денёк!",
           description:
             "Получаешь спальное место в комфортном корпусе на одну ночь и три приёма пищи.",
           button: {
-            id: 2,
+            id: 16,
             label: "Забронировать место",
             href: "https://buildin.ai/share/9705240a-f14d-4c21-b45f-31855bda53d4",
-            isInternal: false,
           },
         },
       ],
@@ -213,14 +208,12 @@ export const landingData: LandingPage = {
               title: "ЗМШ-2025",
               subtitle: "Страница прошлого года",
               href: "https://buildin.ai/share/a3298854-6a28-4e24-abca-3db4a111f37d",
-              isInternal: false,
             },
             {
               id: 14,
               title: "ЗМШ-2024",
               subtitle: "Здесь можно найти информацию о прошлых школах",
               href: "https://zmsh.notion.site/",
-              isInternal: false,
             },
           ],
         },
@@ -228,13 +221,12 @@ export const landingData: LandingPage = {
     },
   ],
   footer: {
-    id: 21,
+    id: 27,
     copyright: "Зимняя математическая школа",
     link: {
-      id: 41,
+      id: 23,
       label: "Телеграм: Новости ЗМШ",
       href: "https://t.me/zmsh_dmm_GetYear",
-      isInternal: false,
     },
   },
 };

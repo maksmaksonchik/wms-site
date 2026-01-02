@@ -64,9 +64,6 @@ export interface BlocksLinkCard extends Struct.ComponentSchema {
   };
   attributes: {
     href: Schema.Attribute.String & Schema.Attribute.Required;
-    isInternal: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<false>;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
   };

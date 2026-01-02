@@ -8,7 +8,6 @@ export type Link = {
   id: number;
   label: string;
   href: string;
-  isInternal: boolean;
 };
 
 export type ThemedImage = {

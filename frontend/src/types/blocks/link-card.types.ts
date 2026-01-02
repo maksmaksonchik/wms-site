@@ -4,5 +4,4 @@ export type LinkCard = {
   title: string;
   subtitle?: string | null;
   href: string;
-  isInternal: boolean;
 };
