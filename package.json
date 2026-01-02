@@ -22,7 +22,9 @@
     "down": "docker compose down --remove-orphans",
     "up": "docker compose up -d",
     "prod": "npm run build && npm run down && npm run up",
-    "logs": "docker compose logs -f"
+    "logs": "docker compose logs -f",
+    "config:dump": "cd backend && npm run config:dump",
+    "config:restore": "cd backend && npm run config:restore"
   },
   "devDependencies": {
     "execa": "^9.4.0"
