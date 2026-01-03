@@ -9,6 +9,7 @@ export async function generateSecrets() {
     APP_KEYS: Array.from({ length: 4 }, () => generateKey(16)).join(","),
     API_TOKEN_SALT: generateKey(16),
     ADMIN_JWT_SECRET: generateKey(16),
+    JWT_SECRET: generateKey(16),
     TRANSFER_TOKEN_SALT: generateKey(16),
     ENCRYPTION_KEY: generateKey(32),
   };

@@ -1,3 +1,4 @@
+# For production use only
 services:
   strapi-db:
     container_name: wms_strapi_db
