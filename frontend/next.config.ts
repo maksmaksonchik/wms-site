@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
     dangerouslyAllowLocalIP: isDevMode,
     remotePatterns: [new URL(assetsBaseUrl + assetsPathname)],
   },
+  output: "standalone"
 };
 
 export default nextConfig;

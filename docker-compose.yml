@@ -32,14 +32,44 @@ services:
     image: nginx:1.28-alpine
     env_file: .env
     volumes:
-      - ${SSL_CERT_PATH}:/etc/nginx/conf.d/site.crt:ro
-      - ${SSL_KEY_PATH}:/etc/nginx/conf.d/site.key:ro
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+      - ./nginx/logs:/var/log/nginx
     depends_on:
       - front
     ports:
       - "80:80"
       - "443:443"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    container_name: wms_certbot
+    image: certbot/certbot:latest
+    restart: always
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  fail2ban:
+    container_name: wms_fail2ban
+    image: crazymax/fail2ban:latest
+    restart: always
+    volumes:
+      - ./fail2ban/jail.local:/etc/fail2ban/jail.local:ro
+      - ./fail2ban/filter.d:/etc/fail2ban/filter.d:ro
+      - ./nginx/logs:/var/log/nginx:ro
+      - ./fail2ban/db:/var/lib/fail2ban
+      - ./fail2ban/log:/var/log/fail2ban
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      - TZ=Asia/Yekaterinburg
+    depends_on:
+      - nginx
 
 volumes:
   strapi-data:

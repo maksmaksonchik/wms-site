@@ -1,2 +1,5 @@
 node_modules
 .env.example
+.strapi-updater.json
+.strapi
+dist
