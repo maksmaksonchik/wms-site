@@ -8,19 +8,28 @@
     "install:front": "cd frontend && npm install",
     "install:back": "cd backend && npm install",
     "install:deps": "npm run install:front && npm run install:back",
-    "generate:ssl": "node ./scripts/generate_ssl.js",
+    "generate:env:root": "cp .env.example .env",
+    "generate:env:front": "cd frontend && cp .env.example .env",
+    "generate:env:back": "cd backend && cp .env.example .env",
+    "generate:env": "npm run generate:env:root && npm run generate:env:front && npm run generate:env:back",
+    "generate:ssl": "cd nginx && openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ./site.key -out ./site.crt -config ./ssl_query.conf",
     "generate:secrets": "node ./scripts/generate_secrets.js",
     "dev:front": "cd frontend && npm run dev",
     "dev:back": "cd backend && npm run dev",
     "db:up": "docker compose -f docker-compose-dev.yml up -d",
     "db:down": "docker compose -f docker-compose-dev.yml down --remove-orphans",
-    "build": "docker compose build",
-    "down": "docker compose down --remove-orphans",
-    "up": "docker compose up -d",
-    "prod": "npm run build && npm run down && npm run up",
-    "logs": "docker compose logs -f"
-  },
-  "devDependencies": {
-    "execa": "^9.4.0"
+    "build:prod": "docker compose build",
+    "down:prod": "docker compose down --remove-orphans",
+    "up:prod": "docker compose up -d",
+    "prod": "npm run build:prod && npm run down:prod && npm run up:prod",
+    "logs:prod": "docker compose logs -f",
+    "build:stage": "docker compose -f docker-compose-stage.yml build",
+    "down:stage": "docker compose -f docker-compose-stage.yml down --remove-orphans",
+    "up:stage": "docker compose -f docker-compose-stage.yml up -d",
+    "stage": "npm run build:stage && npm run down:stage && npm run up:stage",
+    "logs:stage": "docker compose -f docker-compose-stage.yml logs -f",
+    "acme-challenge": "docker compose -f docker-compose-acme.yml up",
+    "config:dump": "cd backend && npm run config:dump",
+    "config:restore": "cd backend && npm run config:restore"
   }
 }

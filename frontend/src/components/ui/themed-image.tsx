@@ -1,29 +1,35 @@
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import ImageUI from "@/components/ui/image-ui";
+import type { ThemedImage as ThemedImageType } from "@/types/shared.types";
 
-type ThemedImageProps = {
-  src: {
-    light_theme: string;
-    dark_theme: string;
-  };
+type ThemedImageProps = ThemedImageType & {
+  sizes: string;
   alt: string;
   className?: string;
 };
 
-const ThemedImage = ({ src, alt, className }: ThemedImageProps) => {
+const ThemedImage = ({
+  lightTheme,
+  darkTheme,
+  alt,
+  className,
+  sizes,
+}: ThemedImageProps) => {
   return (
     <>
-      <Image
+      <ImageUI
         className={cn("block dark:hidden", className)}
-        src={src.light_theme}
+        src={lightTheme.url}
         alt={alt}
         fill
+        sizes={sizes}
       />
-      <Image
-        src={src.dark_theme}
+      <ImageUI
+        src={darkTheme.url}
         alt={alt}
         className={cn("hidden dark:block", className)}
         fill
+        sizes={sizes}
       />
     </>
   );

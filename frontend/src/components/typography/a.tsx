@@ -1,43 +1,15 @@
 import { cn } from "@/lib/utils";
+import Link from "../core/link";
 
-type Props = React.ComponentProps<"a"> & {
-  internal?: boolean;
-};
-
-const getExternalRel = (rel = "") => {
-  const relParts = new Set(rel.split(" ").filter(Boolean));
-  relParts.add("noopener");
-  relParts.add("noreferrer");
-  return Array.from(relParts).join(" ");
-};
-
-const getExternalTarget = (target = "") => {
-  return target || "_blank";
-};
-
-const A = ({
-  children,
-  internal = false,
-  className,
-  target,
-  rel,
-  ...props
-}: Props) => {
-  const finalTarget = internal ? target : getExternalTarget(target);
-  const finalRel = internal ? rel : getExternalRel(rel);
-
+const A = ({ className, ...props }: React.ComponentProps<"a">) => {
   return (
-    <a
-      target={finalTarget}
-      rel={finalRel}
+    <Link
       className={cn(
         "text-foreground underline-offset-2 hover:text-primary hover:underline",
         className
       )}
       {...props}
-    >
-      {children}
-    </a>
+    />
   );
 };
 

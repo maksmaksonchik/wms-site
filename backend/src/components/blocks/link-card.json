@@ -15,11 +15,6 @@
     "href": {
       "type": "string",
       "required": true
-    },
-    "isInternal": {
-      "type": "boolean",
-      "required": true,
-      "default": false
     }
   },
   "config": {}

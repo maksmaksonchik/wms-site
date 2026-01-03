@@ -21,6 +21,7 @@
     },
     "definition": {
       "type": "string",
+      "maxLength": 90,
       "required": true
     },
     "avatar": {
@@ -30,6 +31,10 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "sortOrder": {
+      "type": "integer",
+      "required": false
     },
     "isHidden": {
       "type": "boolean",

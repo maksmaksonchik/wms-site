@@ -1,0 +1,11 @@
+[DEFAULT]
+ignoreip = 127.0.0.1/8 ::1 172.16.0.0/12 192.168.0.0/16
+
+[nginx-flood]
+enabled  = true
+filter   = nginx-flood          # любой запрос
+logpath  = /var/log/nginx/access.log
+maxretry = 100                  # 100 совпадений
+findtime = 60                   # за 60 секунд
+bantime  = 3600                 # бан на 1 час
+action   = iptables-multiport[name=nginx-flood, port="http,https"]

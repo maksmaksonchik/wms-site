@@ -7,7 +7,7 @@
   "attributes": {
     "navLinks": {
       "type": "component",
-      "component": "shared.nav-link",
+      "component": "shared.link",
       "repeatable": true
     }
   },
