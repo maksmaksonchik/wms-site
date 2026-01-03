@@ -29,8 +29,10 @@ services:
 
   nginx:
     container_name: wms_nginx
+    build:
+      context: nginx/
+      dockerfile: Dockerfile
     restart: always
-    image: nginx:1.28-alpine
     env_file: .env
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template
@@ -42,7 +44,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   certbot:
     container_name: wms_certbot
