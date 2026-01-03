@@ -1,3 +1,4 @@
+# Only for passing letsencrypt acme challenge
 services:
   nginx:
     image: nginx:1.28-alpine
