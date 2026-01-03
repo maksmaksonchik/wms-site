@@ -2,7 +2,8 @@
 set -e
 
 if [ -f /etc/nginx/templates/default.conf.template ]; then
-    envsubst < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
+    defined_envs=$(printf '${%s} ' $(awk "END { for (name in ENVIRON) { print ( name ~ /${filter}/ ) ? name : \"\" } }" < /dev/null ))
+    envsubst "$defined_envs" < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
 fi
 
 (
