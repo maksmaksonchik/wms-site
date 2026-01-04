@@ -17,6 +17,8 @@ services:
     env_file: backend/.env
     depends_on:
       - strapi-db
+    volumes:
+      - strapi-uploads:/opt/app/public/uploads/
 
   front:
     container_name: wms_front
@@ -38,6 +40,7 @@ services:
       - ./nginx/site.key:/etc/letsencrypt/live/${NGINX_SERVER_NAME}/privkey.pem
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+      - strapi-uploads:/var/data/strapi/uploads
     depends_on:
       - front
     ports:
@@ -47,3 +50,4 @@ services:
 
 volumes:
   strapi-data:
+  strapi-uploads:
