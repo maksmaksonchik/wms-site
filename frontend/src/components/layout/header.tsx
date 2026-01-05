@@ -10,17 +10,18 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 import { siteConfig } from "@/config/site.config";
 import { ThemeToggle } from "@/components/theme-toggle";
 import WmsLogo from "@/components/ui/wms-logo";
 import Container from "@/components/container";
 import Link from "@/components/core/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const MenuIcon = () => {
   return (
@@ -69,7 +70,7 @@ const Header = ({ data }: HeaderProps) => {
         {/* Десктопное меню */}
         <div className="hidden md:flex items-center gap-2">
           {navLinks && (
-            <NavigationMenu className=" ml-auto">
+            <NavigationMenu className="ml-auto">
               <NavigationMenuList className="flex-nowrap">
                 {navLinks.map((link) => (
                   <NavigationMenuItem key={link.id}>
@@ -95,33 +96,27 @@ const Header = ({ data }: HeaderProps) => {
           <ThemeToggle variant="ghost" />
 
           {navLinks && (
-            <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-              <PopoverTrigger asChild>
+            <DropdownMenu
+              modal={false}
+              open={isMenuOpen}
+              onOpenChange={setIsMenuOpen}
+            >
+              <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="cursor-pointer">
                   {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
                 </Button>
-              </PopoverTrigger>
+              </DropdownMenuTrigger>
 
-              <PopoverContent
-                align="end"
-                side="bottom"
-                sideOffset={20}
-                alignOffset={-12}
-              >
+              <DropdownMenuContent align="end">
                 <nav>
                   {navLinks.map((link) => (
-                    <Link
-                      key={link.id}
-                      href={`${link.href}`}
-                      onClick={(e) => handleLinkClick(e)}
-                      className="block p-3 text-lg font-medium rounded-md transition hover:bg-accent hover:text-primary"
-                    >
-                      {link.label}
-                    </Link>
+                    <DropdownMenuItem key={link.id} className="cursor-pointer">
+                      <Link href={`${link.href}`}>{link.label}</Link>
+                    </DropdownMenuItem>
                   ))}
                 </nav>
-              </PopoverContent>
-            </Popover>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </Container>
