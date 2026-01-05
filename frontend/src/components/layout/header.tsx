@@ -112,7 +112,7 @@ const Header = ({ data }: HeaderProps) => {
                   {navLinks.map((link) => (
                     <Link
                       key={link.id}
-                      href={`#${link.id}`}
+                      href={`${link.href}`}
                       onClick={(e) => handleLinkClick(e)}
                       className="block p-3 text-lg font-medium rounded-md transition hover:bg-accent hover:text-primary"
                     >
