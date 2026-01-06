@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import Container from "@/components/container";
 import { Section as SectionProps } from "@/types/layout/section.types";
 import { BlocksRenderer } from "../blocks";
+import Markdown from "@/components/typography/markdown";
 
 type SubsectionProps = {
   children: React.ReactNode;
@@ -33,7 +34,9 @@ const Section = ({
           <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">{heading}</h2>
 
           {description && (
-            <p className="text-lg text-muted-foreground ">{description}</p>
+            <div className="text-lg text-muted-foreground ">
+              <Markdown>{description}</Markdown>
+            </div>
           )}
         </div>
         <BlocksRenderer blocks={blocks} />

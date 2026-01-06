@@ -18,7 +18,7 @@ const Accordion = ({ items }: AccordionProps) => {
               <CardTitle className="text-lg">{item.trigger}</CardTitle>
             </AccordionTrigger>
 
-            <AccordionContent className="px-6 pb-6 text-muted-foreground whitespace-pre-line">
+            <AccordionContent className="px-6 pb-6 text-muted-foreground">
               <Markdown>{item.content}</Markdown>
             </AccordionContent>
           </Card>

@@ -14,7 +14,7 @@ const components: Components = {
   ),
 
   p: ({ children }) => (
-    <p className="mt-2 first:mt-0 text-base leading-relaxed">{children}</p>
+    <p className="mt-2 first:mt-0 leading-relaxed">{children}</p>
   ),
 
   /** Вместо линии, оставляем пустое пространство размером с <p> */
