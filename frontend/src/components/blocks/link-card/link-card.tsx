@@ -15,7 +15,7 @@ const LinkCard = ({ href, title, subtitle }: LinkCardProps) => {
     <Link href={href} className="group">
       <Card className="transition group-hover:bg-accent h-full justify-center">
         <CardHeader className="gap-0 space-y-2">
-          <CardTitle className="text-lg flex items-center gap-1 group-hover:underline">
+          <CardTitle className="text-lg flex items-center gap-1 group-hover:underline underline-offset-4">
             {title}
             <ArrowUpRight className="h-[1em] w-[1em] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </CardTitle>

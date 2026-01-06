@@ -14,18 +14,18 @@ const components: Components = {
   ),
 
   p: ({ children }) => (
-    <p className="mt-2 text-base leading-relaxed">{children}</p>
+    <p className="mt-2 first:mt-0 text-base leading-relaxed">{children}</p>
   ),
 
   /** Вместо линии, оставляем пустое пространство размером с <p> */
-  hr: () => <div className="h-6.5 mt-2"></div>,
+  hr: () => <div className="h-6.5 mt-2 first:mt-0"></div>,
 
   ul: ({ children }) => <ul className="list-disc">{children}</ul>,
   ol: ({ children }) => <ol className="list-decimal">{children}</ol>,
   li: ({ children }) => <li className="ml-8">{children}</li>,
 
   blockquote: ({ children }) => (
-    <blockquote className="mt-2 px-6 pt-1 pb-3 bg-accent rounded-sm text-base leading-relaxed">
+    <blockquote className="mt-2 first:mt-0 px-6 py-2 bg-accent rounded-sm text-base leading-relaxed">
       {children}
     </blockquote>
   ),

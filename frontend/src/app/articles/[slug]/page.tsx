@@ -38,7 +38,7 @@ const Article = async ({ params }: ArticleProps) => {
   return (
     <Container className="py-20">
       <article className="flex flex-col gap-6">
-        <h1 className="py-2 text-4xl font-bold leading-tight tracking-tight text-balance sm:text-5xl lg:text-6xl">
+        <h1 className="mt-6 py-2 text-4xl font-bold leading-tight tracking-tight text-balance sm:text-5xl lg:text-6xl">
           {title}
         </h1>
         <div>
