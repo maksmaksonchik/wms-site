@@ -33,11 +33,27 @@ export class Strapi {
     });
   }
 
-  private async getData(slug: string) {
-    const response = await this.strapiClient.fetch(slug, {
-      cache: "no-store",
-    });
+  private async getData(
+    slug: string,
+    options?: RequestInit & { query?: Record<string, string | number> }
+  ) {
+    const { query, ...initOptions } = options ?? {};
+    const params = new URLSearchParams();
 
+    if (query) {
+      Object.entries(query).forEach(([key, value]) => {
+        params.append(key, String(value));
+      });
+    }
+
+    const url = params.toString() ? `${slug}?${params.toString()}` : slug;
+
+    const init: RequestInit = {
+      cache: "no-store",
+      ...initOptions,
+    };
+
+    const response = await this.strapiClient.fetch(url, init);
     const json = await response.json();
 
     return json.data;
@@ -56,7 +72,9 @@ export class Strapi {
   }
 
   async getSchoolIs(): Promise<SchoolIsItem[]> {
-    return await this.getData(this.slugs.schoolIs);
+    return await this.getData(this.slugs.schoolIs, {
+      query: { "pagination[pageSize]": 100 },
+    });
   }
 
   async getSponsors(): Promise<SponsorsData> {
