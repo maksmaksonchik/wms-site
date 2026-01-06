@@ -19,6 +19,7 @@ const PersonCard = ({ avatar, name }: PersonCardProps) => {
       <CardHeader className="flex flex-row items-center gap-4 py-4 px-6">
         <Avatar className="h-20 w-20">
           <AvatarImage
+            className="object-cover"
             src={avatar ? getStrapiImageUrl(avatar) : avatar}
             alt={name}
           />
