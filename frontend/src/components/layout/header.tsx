@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 
-import { siteConfig } from "@/config/site.config";
 import { ThemeToggle } from "@/components/theme-toggle";
 import WmsLogo from "@/components/ui/wms-logo";
 import Container from "@/components/container";
@@ -42,10 +41,11 @@ const CloseIcon = () => {
 };
 
 type HeaderProps = {
+  title: string;
   data: HeaderData;
 };
 
-const Header = ({ data }: HeaderProps) => {
+const Header = ({ title, data }: HeaderProps) => {
   const { navLinks } = data;
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,7 +64,7 @@ const Header = ({ data }: HeaderProps) => {
           className="flex items-center gap-2 transition hover:text-primary text-lg font-semibold tracking-tight"
         >
           <WmsLogo variant="primary" className="w-[1.5em] h-[1.5em]" />
-          <span>{siteConfig.title}</span>
+          <span>{title}</span>
         </Link>
 
         {/* Десктопное меню */}

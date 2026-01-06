@@ -11,12 +11,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "header": {
-      "type": "component",
-      "component": "layout.header",
-      "repeatable": false,
-      "required": true
-    },
     "hero": {
       "type": "component",
       "component": "layout.hero",
@@ -27,12 +21,6 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::landing-section.landing-section"
-    },
-    "footer": {
-      "type": "component",
-      "component": "layout.footer",
-      "repeatable": false,
-      "required": true
     }
   }
 }

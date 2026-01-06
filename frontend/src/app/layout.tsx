@@ -2,28 +2,39 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { siteConfig } from "@/config/site.config";
+import { strapi } from "@/services/strapi";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
 });
 
-export const metadata: Metadata = {
-  title: siteConfig.title,
-  description: siteConfig.description,
+export const generateMetadata = async (): Promise<Metadata> => {
+  const { title, description } = await strapi.getGlobal();
+
+  return {
+    title: {
+      default: title,
+      template: `%s | ${title}`,
+    },
+    description: description,
+  };
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { title, header, footer } = await strapi.getGlobal();
+
   return (
     <html lang="ru" suppressHydrationWarning>
       <body
@@ -35,7 +46,11 @@ export default function RootLayout({
           enableSystem={true}
           disableTransitionOnChange
         >
-          {children}
+          <Header title={title} data={header} />
+
+          <main>{children}</main>
+
+          <Footer data={footer} />
         </ThemeProvider>
       </body>
     </html>

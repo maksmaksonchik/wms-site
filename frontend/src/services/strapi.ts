@@ -4,6 +4,8 @@ import { ScheduleData } from "@/types/schedule.types";
 import { SchoolIsItem } from "@/types/school-is-item.types";
 import { strapi as strapiClient, StrapiClient } from "@strapi/client";
 import { getSortedSchedule } from "./utils/getSortedSchedule";
+import { Article } from "@/types/article.types";
+import { Global } from "@/types/global.types";
 
 export class Strapi {
   private readonly strapiClient: StrapiClient;
@@ -11,10 +13,12 @@ export class Strapi {
   private readonly baseURL: string = process.env.API_BASE_URL || "";
 
   private readonly slugs = {
-    landingPage: process.env.LANDING_PAGE_SLUG || "",
-    schedule: process.env.SCHEDULE_SLUG || "",
-    schoolIs: process.env.SCHOOL_IS_SLUG || "",
-    sponsors: process.env.SPONSORS_SLUG || "",
+    global: process.env.GLOBAL_SLUG || "/global",
+    landingPage: process.env.LANDING_PAGE_SLUG || "/landing-page",
+    schedule: process.env.SCHEDULE_SLUG || "/schedules",
+    schoolIs: process.env.SCHOOL_IS_SLUG || "/school-is-items",
+    sponsors: process.env.SPONSORS_SLUG || "/sponsors",
+    articles: process.env.ARTICLES_SLUG || "/articles",
   };
 
   constructor() {
@@ -59,6 +63,10 @@ export class Strapi {
     return json.data;
   }
 
+  async getGlobal(): Promise<Global> {
+    return await this.getData(this.slugs.global);
+  }
+
   async getLandingData(): Promise<LandingPage> {
     return await this.getData(this.slugs.landingPage);
   }
@@ -98,6 +106,19 @@ export class Strapi {
     });
 
     return result;
+  }
+
+  async getArticle(slug: string): Promise<Article | null> {
+    const articles: Article[] | null | undefined = await this.getData(
+      this.slugs.articles,
+      {
+        query: { "filters[slug][$eq]": slug },
+      }
+    );
+
+    if (!articles || articles.length !== 1) return null;
+
+    return articles[0];
   }
 }
 

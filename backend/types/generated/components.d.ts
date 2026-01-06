@@ -86,6 +86,16 @@ export interface BlocksLinkCardGrid extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksMarkdown extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_markdowns';
+  info: {
+    displayName: 'Markdown';
+  };
+  attributes: {
+    text: Schema.Attribute.RichText & Schema.Attribute.Required;
+  };
+}
+
 export interface BlocksSchedule extends Struct.ComponentSchema {
   collectionName: 'components_blocks_schedules';
   info: {
@@ -198,6 +208,7 @@ declare module '@strapi/strapi' {
       'blocks.image-with-accordion': BlocksImageWithAccordion;
       'blocks.link-card': BlocksLinkCard;
       'blocks.link-card-grid': BlocksLinkCardGrid;
+      'blocks.markdown': BlocksMarkdown;
       'blocks.schedule': BlocksSchedule;
       'blocks.school-is-gallery': BlocksSchoolIsGallery;
       'blocks.sponsors-gallery': BlocksSponsorsGallery;

@@ -5,7 +5,7 @@ const A = ({ className, ...props }: React.ComponentProps<"a">) => {
   return (
     <Link
       className={cn(
-        "text-foreground underline-offset-2 hover:text-primary hover:underline",
+        "text-foreground underline-offset-4 hover:text-primary hover:underline",
         className
       )}
       {...props}
