@@ -59,6 +59,8 @@ const Link = (props: React.ComponentProps<"a">) => {
       if (target) target.scrollIntoView({ behavior: "smooth" });
 
       history.pushState(null, "", `#${anchorId}`);
+
+      e.currentTarget.blur();
     };
 
     return <a {...props} onClick={handleClick} />;
