@@ -1,12 +1,6 @@
 import type { Core } from "@strapi/strapi";
 
 const populate = {
-  header: {
-    populate: {
-      navLinks: true,
-    },
-  },
-
   hero: {
     populate: {
       location: true,
@@ -45,6 +39,8 @@ const populate = {
             },
           },
 
+          "blocks.markdown": true,
+
           "blocks.schedule": {
             populate: {
               schedule: {
@@ -58,12 +54,6 @@ const populate = {
           "blocks.sponsors-gallery": true,
         },
       },
-    },
-  },
-
-  footer: {
-    populate: {
-      link: true,
     },
   },
 };

@@ -7,6 +7,7 @@ import { LinkCardGrid } from "./link-card-grid.types";
 import { SchoolIsGallery } from "./school-is-gallery.types";
 import { SponsorsGallery } from "./sponsors-gallery.types";
 import { Schedule } from "./schedule.types";
+import { MarkdownBlock } from "./markdown-block.types";
 
 type Block =
   | LinkCard
@@ -15,7 +16,8 @@ type Block =
   | LinkCardGrid
   | SchoolIsGallery
   | SponsorsGallery
-  | Schedule;
+  | Schedule
+  | MarkdownBlock;
 
 export type {
   Block,
@@ -28,4 +30,5 @@ export type {
   SchoolIsGallery,
   SponsorsGallery,
   Schedule,
+  MarkdownBlock,
 };

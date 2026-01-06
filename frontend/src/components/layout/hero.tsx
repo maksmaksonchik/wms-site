@@ -42,7 +42,7 @@ const Hero = ({ data }: HeroProps) => {
             <p className="dark text-base text-muted-foreground sm:text-lg">
               <A
                 href={location.href}
-                className="inline-flex items-center text-muted-foreground"
+                className="inline-flex items-center text-muted-foreground no-underline hover:underline"
               >
                 <MapPin className="inline mr-2" size="1em" />
                 {location.label}
