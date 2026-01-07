@@ -40,6 +40,8 @@ const populate = {
       "blocks.school-is-gallery": true,
 
       "blocks.sponsors-gallery": true,
+
+      "blocks.info": true,
     },
   },
 };

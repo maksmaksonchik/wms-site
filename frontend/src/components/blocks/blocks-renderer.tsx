@@ -1,3 +1,4 @@
+import { Block } from "@/types/blocks";
 import CallToAction from "./call-to-action/call-to-action";
 import LinkCard from "./link-card/link-card";
 import Schedule from "./schedule/schedule";
@@ -5,8 +6,8 @@ import ImageWithAccordion from "./image-with-accordion/image-with-accordion";
 import LinkCardGrid from "./link-card-grid/link-card-grid";
 import SchoolIsGallery from "./school-is-gallery/school-is-gallery";
 import SponsorsGallery from "./sponsors-gallery/sponsors-gallery";
-import { Block } from "@/types/blocks";
 import MarkdownBlock from "./markdown-block/markdown-block";
+import Info from "./info/info";
 
 // TODO: remove any
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,6 +20,7 @@ const componentMap: Record<Block["__component"], any> = {
   "blocks.school-is-gallery": SchoolIsGallery,
   "blocks.sponsors-gallery": SponsorsGallery,
   "blocks.markdown": MarkdownBlock,
+  "blocks.info": Info,
 } as const;
 
 type BlocksRendererProps = {

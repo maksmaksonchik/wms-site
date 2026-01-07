@@ -57,6 +57,20 @@ export interface BlocksImageWithAccordion extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksInfo extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_infos';
+  info: {
+    displayName: 'Info';
+  };
+  attributes: {
+    description: Schema.Attribute.RichText;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    type: Schema.Attribute.Enumeration<['note']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'note'>;
+  };
+}
+
 export interface BlocksLinkCard extends Struct.ComponentSchema {
   collectionName: 'components_blocks_link_cards';
   info: {
@@ -206,6 +220,7 @@ declare module '@strapi/strapi' {
       'blocks.call-to-action': BlocksCallToAction;
       'blocks.image': BlocksImage;
       'blocks.image-with-accordion': BlocksImageWithAccordion;
+      'blocks.info': BlocksInfo;
       'blocks.link-card': BlocksLinkCard;
       'blocks.link-card-grid': BlocksLinkCardGrid;
       'blocks.markdown': BlocksMarkdown;

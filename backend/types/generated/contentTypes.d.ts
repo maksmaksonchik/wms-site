@@ -451,6 +451,7 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
         'blocks.image-with-accordion',
         'blocks.call-to-action',
         'blocks.markdown',
+        'blocks.info',
       ]
     >;
     createdAt: Schema.Attribute.DateTime;
@@ -601,6 +602,7 @@ export interface ApiLandingSectionLandingSection
         'blocks.link-card-grid',
         'blocks.image-with-accordion',
         'blocks.markdown',
+        'blocks.info',
       ]
     >;
     createdAt: Schema.Attribute.DateTime;
