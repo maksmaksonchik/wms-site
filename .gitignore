@@ -68,7 +68,7 @@ certbot/www/*
 
 # nginx
 nginx/logs/
- nginx/allowed-ips.conf
+nginx/allowed-ips.conf
 
 # fail2ban
 fail2ban/db/
