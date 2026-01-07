@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_blocks_infos",
+  "info": {
+    "displayName": "Info"
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "required": true,
+      "default": "note",
+      "enum": [
+        "note"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    }
+  },
+  "config": {}
+}

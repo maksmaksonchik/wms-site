@@ -8,6 +8,7 @@ import { SchoolIsGallery } from "./school-is-gallery.types";
 import { SponsorsGallery } from "./sponsors-gallery.types";
 import { Schedule } from "./schedule.types";
 import { MarkdownBlock } from "./markdown-block.types";
+import { Info } from "./info.types";
 
 type Block =
   | LinkCard
@@ -17,7 +18,8 @@ type Block =
   | SchoolIsGallery
   | SponsorsGallery
   | Schedule
-  | MarkdownBlock;
+  | MarkdownBlock
+  | Info;
 
 export type {
   Block,
@@ -31,4 +33,5 @@ export type {
   SponsorsGallery,
   Schedule,
   MarkdownBlock,
+  Info,
 };

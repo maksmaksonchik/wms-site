@@ -46,7 +46,7 @@ const Link = (props: React.ComponentProps<"a">) => {
   const { href } = props;
 
   if (type === "internal") {
-    return <NextLink href={props.href} {...props} />;
+    return <NextLink href={href} {...props} />;
   }
 
   if (type === "anchor") {
@@ -61,13 +61,15 @@ const Link = (props: React.ComponentProps<"a">) => {
       history.pushState(null, "", `#${anchorId}`);
 
       e.currentTarget.blur();
+
+      props.onClick?.(e);
     };
 
     return <a {...props} onClick={handleClick} />;
   }
 
   if (type === "internal-with-anchor") {
-    return <NextLink href={props.href} {...props} />;
+    return <NextLink href={href} {...props} />;
   }
 
   return (

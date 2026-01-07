@@ -107,11 +107,21 @@ const Header = ({ title, data }: HeaderProps) => {
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="p-2">
                 <nav>
                   {navLinks.map((link) => (
-                    <DropdownMenuItem key={link.id} className="cursor-pointer">
-                      <Link href={`${link.href}`}>{link.label}</Link>
+                    <DropdownMenuItem
+                      key={link.id}
+                      className="font-medium text-base"
+                      asChild
+                    >
+                      <Link
+                        href={link.href}
+                        className="cursor-pointer"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
                     </DropdownMenuItem>
                   ))}
                 </nav>

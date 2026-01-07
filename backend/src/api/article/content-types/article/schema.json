@@ -29,7 +29,8 @@
         "blocks.link-card-grid",
         "blocks.image-with-accordion",
         "blocks.call-to-action",
-        "blocks.markdown"
+        "blocks.markdown",
+        "blocks.info"
       ]
     }
   }
