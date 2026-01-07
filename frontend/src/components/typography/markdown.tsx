@@ -22,10 +22,10 @@ const components: Components = {
 
   ul: ({ children }) => <ul className="list-disc">{children}</ul>,
   ol: ({ children }) => <ol className="list-decimal">{children}</ol>,
-  li: ({ children }) => <li className="ml-8">{children}</li>,
+  li: ({ children }) => <li className="mt-2 ml-8">{children}</li>,
 
   blockquote: ({ children }) => (
-    <blockquote className="mt-2 first:mt-0 px-6 py-2 bg-accent rounded-sm text-base leading-relaxed">
+    <blockquote className="mt-2 first:mt-0 px-6 py-2 bg-accent text-accent-foreground rounded-sm text-base leading-relaxed">
       {children}
     </blockquote>
   ),
