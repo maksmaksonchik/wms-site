@@ -66,8 +66,9 @@ certbot/conf/*
 certbot/www/*
 !certbot/www/.gitkeep
 
-# nginx logs
+# nginx
 nginx/logs/
+nginx/allowed-ips.conf
 
 # fail2ban
 fail2ban/db/
