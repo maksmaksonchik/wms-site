@@ -36,6 +36,7 @@ services:
     env_file: .env
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template
+      - ./nginx/allowed-ips.conf:/etc/nginx/allowed-ips.conf
       - ./nginx/site.crt:/etc/letsencrypt/live/${NGINX_SERVER_NAME}/fullchain.pem
       - ./nginx/site.key:/etc/letsencrypt/live/${NGINX_SERVER_NAME}/privkey.pem
       - ./certbot/conf:/etc/letsencrypt
