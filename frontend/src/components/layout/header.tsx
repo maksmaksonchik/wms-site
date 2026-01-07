@@ -110,8 +110,14 @@ const Header = ({ title, data }: HeaderProps) => {
               <DropdownMenuContent align="end">
                 <nav>
                   {navLinks.map((link) => (
-                    <DropdownMenuItem key={link.id} className="cursor-pointer">
-                      <Link href={`${link.href}`}>{link.label}</Link>
+                    <DropdownMenuItem key={link.id} asChild>
+                      <Link
+                        href={link.href}
+                        className="cursor-pointer"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
                     </DropdownMenuItem>
                   ))}
                 </nav>
