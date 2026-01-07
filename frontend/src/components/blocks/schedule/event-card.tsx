@@ -18,10 +18,10 @@ const EventCard = ({ event, date }: { event: Event; date: string }) => {
 
       {/* Контент: на мобильных вертикально, на десктопе горизонтально */}
       {(event.image || event.description || event.speaker) && (
-        <div className="flex flex-col md:flex-row items-start gap-6">
+        <div className="flex flex-col md:grid md:grid-cols-[1fr_2fr] gap-6">
           {/* Картинка: на мобильных полная ширина, на десктопе слева */}
           {event.image && (
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden md:max-w-[33%] md:shrink-0 sm:max-w-[60%] mx-auto">
+            <div className="mx-auto relative w-full sm:max-w-[60%] md:max-w-full aspect-video rounded-lg overflow-hidden">
               <Image
                 src={event.image.url}
                 alt={event.title}
@@ -33,7 +33,7 @@ const EventCard = ({ event, date }: { event: Event; date: string }) => {
           )}
 
           {/* Описание и лектор: под картинкой на мобильных, справа на десктопе */}
-          <div className="w-full md:flex-1 space-y-4">
+          <div className="flex flex-col space-y-6">
             {event.description && (
               <div className="text-muted-foreground leading-relaxed">
                 <Markdown>{event.description}</Markdown>
@@ -41,7 +41,7 @@ const EventCard = ({ event, date }: { event: Event; date: string }) => {
             )}
 
             {event.speaker && (
-              <div className="text-right pt-2">
+              <div className="mt-auto text-right">
                 <p className="font-medium">{event.speaker.name}</p>
                 {event.speaker.credentials && (
                   <p className="text-sm text-muted-foreground">
