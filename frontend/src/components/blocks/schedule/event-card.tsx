@@ -2,6 +2,7 @@ import Image from "@/components/ui/image-ui";
 import { Card } from "@/components/ui/card";
 import { Event } from "@/types/schedule.types";
 import Markdown from "@/components/typography/markdown";
+import { cn } from "@/lib/utils";
 
 const EventCard = ({ event, date }: { event: Event; date: string }) => {
   return (
@@ -18,7 +19,12 @@ const EventCard = ({ event, date }: { event: Event; date: string }) => {
 
       {/* Контент: на мобильных вертикально, на десктопе горизонтально */}
       {(event.image || event.description || event.speaker) && (
-        <div className="flex flex-col md:grid md:grid-cols-[1fr_2fr] gap-6">
+        <div
+          className={cn(
+            "flex flex-col md:grid gap-6",
+            event.image ? "md:grid-cols-[1fr_2fr]" : "md:grid-cols-[1fr]"
+          )}
+        >
           {/* Картинка: на мобильных полная ширина, на десктопе слева */}
           {event.image && (
             <div className="mx-auto relative w-full sm:max-w-[60%] md:max-w-full aspect-video rounded-lg overflow-hidden">
