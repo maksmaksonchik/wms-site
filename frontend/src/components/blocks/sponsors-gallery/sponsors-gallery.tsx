@@ -6,24 +6,36 @@ import LogoCard from "./logo-card";
 import PersonCard from "./person-card";
 
 const SponsorsGallery = async ({
+  generalHeading,
   goldHeading,
   silverHeading,
   bronzeHeading,
   personalHeading,
 }: SponsorsGalleryProps) => {
-  const { gold, silver, bronze, personal } = await strapi.getSponsors();
+  const { general, gold, silver, bronze, personal } =
+    await strapi.getSponsors();
 
   return (
     <>
-      {gold.length > 0 && (
-        <Subsection title={goldHeading}>
+      {general.length > 0 && (
+        <Subsection title={generalHeading}>
           <Grid type="fixed" cols={3}>
-            {gold.map((sponsor, index) => (
+            {general.map((sponsor, index) => (
               <LogoCard
-                key={`gold-${index}`}
+                key={`general-${index}`}
                 sponsor={sponsor}
                 variant="large"
               />
+            ))}
+          </Grid>
+        </Subsection>
+      )}
+
+      {gold.length > 0 && (
+        <Subsection title={goldHeading}>
+          <Grid type="fixed" cols={4}>
+            {gold.map((sponsor, index) => (
+              <LogoCard key={`gold-${index}`} sponsor={sponsor} />
             ))}
           </Grid>
         </Subsection>

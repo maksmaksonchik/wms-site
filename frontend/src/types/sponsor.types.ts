@@ -8,7 +8,7 @@ export type CompanySponsor = {
   name: string;
 
   /** Уровень спонсора */
-  level: "bronze" | "silver" | "gold";
+  level: "bronze" | "silver" | "gold" | "general";
 
   /** Ссылка на страницу компании */
   url?: string | null;
@@ -30,6 +30,7 @@ export type PersonSponsor = {
 export type Sponsor = CompanySponsor | PersonSponsor;
 
 export type SponsorsData = {
+  general: CompanySponsor[];
   gold: CompanySponsor[];
   silver: CompanySponsor[];
   bronze: CompanySponsor[];

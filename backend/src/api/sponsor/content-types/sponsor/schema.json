@@ -55,9 +55,10 @@
       },
       "required": true,
       "enum": [
-        "bronze",
+        "general",
+        "gold",
         "silver",
-        "gold"
+        "bronze"
       ]
     },
     "url": {
