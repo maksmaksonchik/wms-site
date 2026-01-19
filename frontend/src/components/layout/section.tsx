@@ -11,7 +11,7 @@ type SubsectionProps = {
 
 const Subsection = ({ children, title }: SubsectionProps) => {
   return (
-    <div className="mt-8 space-y-4">
+    <div className="space-y-4">
       <h3 className="text-xl font-semibold">{title}</h3>
       {children}
     </div>

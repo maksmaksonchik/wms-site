@@ -5,6 +5,10 @@
   },
   "options": {},
   "attributes": {
+    "generalHeading": {
+      "type": "string",
+      "required": true
+    },
     "goldHeading": {
       "type": "string",
       "required": true

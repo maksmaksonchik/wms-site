@@ -139,6 +139,7 @@ export interface BlocksSponsorsGallery extends Struct.ComponentSchema {
   };
   attributes: {
     bronzeHeading: Schema.Attribute.String & Schema.Attribute.Required;
+    generalHeading: Schema.Attribute.String & Schema.Attribute.Required;
     goldHeading: Schema.Attribute.String & Schema.Attribute.Required;
     personalHeading: Schema.Attribute.String & Schema.Attribute.Required;
     silverHeading: Schema.Attribute.String & Schema.Attribute.Required;

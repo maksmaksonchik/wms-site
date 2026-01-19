@@ -808,7 +808,9 @@ export interface ApiSponsorSponsor extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    level: Schema.Attribute.Enumeration<['bronze', 'silver', 'gold']> &
+    level: Schema.Attribute.Enumeration<
+      ['general', 'gold', 'silver', 'bronze']
+    > &
       Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

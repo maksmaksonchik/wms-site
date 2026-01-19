@@ -89,6 +89,7 @@ export class Strapi {
     const data = await this.getData(this.slugs.sponsors);
 
     const result: SponsorsData = {
+      general: [],
       gold: [],
       silver: [],
       bronze: [],
