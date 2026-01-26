@@ -7,9 +7,6 @@ export type Event = {
   /** Название события */
   title: string;
 
-  /** Является ли лекцией */
-  isLecture: boolean;
-
   /** Время начала события (HH:MM:SS)*/
   start: string;
 
@@ -19,17 +16,20 @@ export type Event = {
   /** Если событие происходит уже после полуночи, но принадлежит к дню — true */
   isAfterMidnight: boolean;
 
+  /** Описание события в формате markdown */
+  description?: string;
+
   /** Спикер */
   speaker?: Speaker | null;
 
   /** Картинка события */
   image?: StrapiImage;
-
-  /** Описание события в формате markdown */
-  description?: string;
 };
 
 type Speaker = {
+  id: number;
+  documentId: string;
+
   /** Имя спикера или название компании */
   name: string;
 
@@ -38,6 +38,9 @@ type Speaker = {
 };
 
 export type ScheduleDay = {
+  id: number;
+  documentId: string;
+
   /** Дата (YYYY-MM-DD)*/
   date: string;
 
