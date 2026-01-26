@@ -50,7 +50,7 @@ const EventCard = ({ event, date }: { event: Event; date: string }) => {
               <div className="mt-auto text-right">
                 <p className="font-medium">{event.speaker.name}</p>
                 {event.speaker.credentials && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground text-pretty">
                     {event.speaker.credentials}
                   </p>
                 )}
