@@ -2,7 +2,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import type { SchoolIsItem } from "@/types/school-is-item.types";
-import { getStrapiImageUrl } from "@/lib/image-utils";
 
 const QuoteCard = ({ definition, name, credentials, avatar }: SchoolIsItem) => {
   return (
@@ -10,8 +9,10 @@ const QuoteCard = ({ definition, name, credentials, avatar }: SchoolIsItem) => {
       <div className="relative aspect-square overflow-hidden rounded-md">
         <Avatar className="size-full rounded-none">
           <AvatarImage
-            src={getStrapiImageUrl(avatar.url)}
+            src={avatar.url}
             alt={name}
+            // TODO: вынести, тут размеры для галереи спонсоров
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover"
           />
           <AvatarFallback className="rounded-none" />

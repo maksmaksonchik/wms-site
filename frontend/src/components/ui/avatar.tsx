@@ -4,6 +4,8 @@ import * as React from "react"
 import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
 import { cn } from "@/lib/utils"
+import ImageUI from "./image-ui"
+import { useState } from "react"
 
 function Avatar({
   className,
@@ -22,15 +24,21 @@ function Avatar({
 }
 
 function AvatarImage({
-  className,
+  sizes,
   ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+}: React.ComponentProps<typeof ImageUI>) {
+  const [error, setError] = useState(false);
+
+  if (error) return null;
+
   return (
-    <AvatarPrimitive.Image
+    <ImageUI
       data-slot="avatar-image"
-      className={cn("aspect-square size-full", className)}
+      fill
+      sizes={sizes ?? "32px"}
+      onError={() => setError(true)}
       {...props}
-    />
+      />
   )
 }
 
