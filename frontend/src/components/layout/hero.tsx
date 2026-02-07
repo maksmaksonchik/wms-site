@@ -18,7 +18,7 @@ const Hero = ({ data }: HeroProps) => {
         src={background.url}
         alt=""
         fill
-        sizes="100vw"
+        sizes="(orientation: portrait) 200vw, 120vw"
         className="object-cover z-0"
         priority
       />

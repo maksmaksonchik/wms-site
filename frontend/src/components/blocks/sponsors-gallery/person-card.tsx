@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { getStrapiImageUrl } from "@/lib/image-utils";
 
 const getInitials = (name: string) =>
   name
@@ -20,8 +19,9 @@ const PersonCard = ({ avatar, name }: PersonCardProps) => {
         <Avatar className="h-20 w-20">
           <AvatarImage
             className="object-cover"
-            src={avatar ? getStrapiImageUrl(avatar) : avatar}
+            src={avatar}
             alt={name}
+            sizes="80px"
           />
           <AvatarFallback>{getInitials(name)}</AvatarFallback>
         </Avatar>
