@@ -86,7 +86,9 @@ export class Strapi {
   }
 
   async getSponsors(): Promise<SponsorsData> {
-    const data = await this.getData(this.slugs.sponsors);
+    const data = await this.getData(this.slugs.sponsors,{
+      query: { "pagination[pageSize]": 100 },
+    });
 
     const result: SponsorsData = {
       general: [],
