@@ -17,28 +17,36 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.31.2",
-    "@strapi/plugin-users-permissions": "5.31.2",
-    "@strapi/strapi": "5.31.2",
-    "pg": "8.8.0",
+    "@strapi/plugin-cloud": "5.63.0",
+    "@strapi/plugin-users-permissions": "5.63.0",
+    "@strapi/strapi": "5.63.0",
+    "pg": "8.23.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
-    "strapi-plugin-sortable-entries": "^1.2.0",
+    "strapi-plugin-sortable-entries": "^1.4.2",
     "styled-components": "^6.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^26",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "typescript": "^5"
   },
   "engines": {
-    "node": ">=20.0.0 <=24.x.x",
+    "node": ">=22.0.0 <=26.x.x",
     "npm": ">=6.0.0"
+  },
+  "overrides": {
+    "zod@4.4.3": "4.6.7"
   },
   "strapi": {
     "uuid": "9b028c41-4445-4514-8be2-c27145eb9f22",
     "installId": "72f9e63d42a86a8c73b2c5a6867c5b00708685dbb438e13cb6df8f97e728d629"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "@swc/core": true,
+    "core-js-pure": false
   }
 }
