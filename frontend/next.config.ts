@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
   images: {
     dangerouslyAllowLocalIP: isDevMode,
     remotePatterns: [new URL(assetsBaseUrl + assetsPathname)],
+    // По умолчанию кэш оптимизированных картинок может занять до 50% свободного диска
+    maximumDiskCacheSize: 500_000_000,
   },
   output: "standalone"
 };
