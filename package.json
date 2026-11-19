@@ -22,7 +22,7 @@
     "prod:build": "docker compose build --pull",
     "prod:down": "docker compose down --remove-orphans",
     "prod:up": "docker compose up -d",
-    "prod:prune": "docker image prune -f && docker builder prune -f --filter until=168h",
+    "prod:prune": "docker image prune -f && docker builder prune -f --max-used-space 5gb",
     "prod": "npm run prod:pull && npm run prod:build && npm run prod:down && npm run prod:up && npm run prod:prune",
     "prod:logs": "docker compose logs -f",
     "stage:build": "docker compose -f docker-compose-stage.yml build --pull",
