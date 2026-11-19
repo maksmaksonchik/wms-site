@@ -64,10 +64,10 @@ services:
     restart: always
     volumes:
       - ./fail2ban/jail.local:/etc/fail2ban/jail.local:ro
-      - ./fail2ban/filter.d:/etc/fail2ban/filter.d:ro
+      # Образ подключает фильтры из /data/filter.d поверх стандартных, а базу банов держит в /data/db
+      - ./fail2ban/filter.d:/data/filter.d:ro
+      - ./fail2ban/db:/data/db
       - ./nginx/logs:/var/log/nginx:ro
-      - ./fail2ban/db:/var/lib/fail2ban
-      - ./fail2ban/log:/var/log/fail2ban
     network_mode: "host"
     cap_add:
       - NET_ADMIN
