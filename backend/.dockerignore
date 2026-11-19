@@ -3,3 +3,4 @@ node_modules
 .strapi-updater.json
 .strapi
 dist
+.env
