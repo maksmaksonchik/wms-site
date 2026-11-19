@@ -77,3 +77,6 @@ fail2ban/log/
 *.dump
 *.sql
 *.sql.gz
+
+# настройки скриптов ВМ
+infra/vm/vm.env
