@@ -8,4 +8,4 @@ logpath  = /var/log/nginx/access.log
 maxretry = 100
 findtime = 60
 bantime  = 3600
-action   = iptables-multiport[name=nginx-flood, port="http,https"]
+action   = iptables-multiport[name=nginx-flood, port="http,https", chain="DOCKER-USER"]
