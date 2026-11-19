@@ -1,7 +1,7 @@
 # Only for passing letsencrypt acme challenge
 services:
   nginx:
-    image: nginx:1.28-alpine
+    image: nginx:1.30-alpine
     container_name: nginx_acme
     env_file: .env
     ports:

@@ -32,7 +32,7 @@ services:
   nginx:
     container_name: wms_nginx
     restart: always
-    image: nginx:1.28-alpine
+    image: nginx:1.30-alpine
     env_file: .env
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template

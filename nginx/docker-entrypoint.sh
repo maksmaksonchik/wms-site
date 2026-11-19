@@ -13,4 +13,10 @@ fi
     done
 ) &
 
+(
+    while sleep 3600; do
+        logrotate /etc/logrotate.d/nginx || echo "[WARN] logrotate failed"
+    done
+) &
+
 exec "$@"

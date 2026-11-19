@@ -1,4 +1,9 @@
-FROM nginx:1.28-alpine
+FROM nginx:1.30-alpine
+
+RUN apk add --no-cache logrotate
+COPY logrotate.conf /etc/logrotate.d/nginx
+# logrotate игнорирует конфиги, доступные на запись группе или всем
+RUN chmod 0644 /etc/logrotate.d/nginx
 
 COPY nginx.conf /etc/nginx/templates/default.conf.template
 
