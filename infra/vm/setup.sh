@@ -5,6 +5,8 @@
 #   sudo ./setup.sh finish   — убрать временный доступ по SSH с белого IP
 # Флаг -y отвечает «да» на вопросы. Настройки — в vm.env рядом.
 # Повторный запуск безопасен: шаги идемпотентны.
+# Запуск через sh (dash) ломается на bash-синтаксисе: перезапускаемся в bash
+if [ -z "${BASH_VERSION:-}" ]; then exec bash "$0" "$@"; fi
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)

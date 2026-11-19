@@ -34,7 +34,7 @@ EOF
   for ((i = 1; i < ${#hosts[@]}; i++)); do
     cli_priv=$(wg genkey)
     cli_pub=$(wg pubkey <<<"$cli_priv")
-    printf '\n[Peer]\n# client-%d\nPublicKey = %s\nAllowedIPs = %s/32\n' "$i" "$cli_pub" "${hosts[i]}" >> "$conf"
+    printf '\n[Peer]\n# name = client-%d\nPublicKey = %s\nAllowedIPs = %s/32\n' "$i" "$cli_pub" "${hosts[i]}" >> "$conf"
     {
       printf '[Interface]\nPrivateKey = %s\nAddress = %s/%s\n' "$cli_priv" "${hosts[i]}" "$prefix"
       [[ -n ${WG_CLIENT_DNS:-} ]] && printf 'DNS = %s\n' "$WG_CLIENT_DNS"

@@ -8,6 +8,7 @@
 | `setup.sh vpn` | WireGuard-шлюз: ufw, пересылка VPN → LAN, sshd, автообновления |
 | `setup.sh app` | ВМ сайта: Docker из официального репозитория, `daemon.json`, ufw, клон репозитория в `/opt/wms-site` |
 | `setup.sh finish` | убирает временное правило SSH с белого IP, которое ставится при первом запуске |
+| `wg-peer.sh` | на шлюзе: `list`, `add`, `rotate`, `remove`, `keep`, `label` для клиентов WireGuard, применяется на лету (см. ниже) |
 | `audit.sh` | только читает: снимок текущей настройки для сверки (ключи WireGuard не печатает) |
 | `vm.env.example` | все параметры; скопировать в `vm.env` (он в `.gitignore`) |
 
@@ -24,6 +25,22 @@
 - ufw: запрет входящих, SSH только из `LAN_NET` и `VPN_NET`;
 - `sysctl.d/90-zmsh-hardening.conf`: syncookies, `rp_filter=2`, запрет redirects и source route;
 - journald до 500 МБ, swap (по умолчанию 1 ГБ, если swap нет), часовой пояс.
+
+## Клиенты VPN
+
+Один человек — один конфиг с понятным именем. Источник правды — `/etc/wireguard/<WG_IF>.conf`;
+`wg-peer.sh` перед каждой правкой кладёт копию в `/etc/wireguard/backup/` и применяет
+изменения через `wg syncconf`: подключённые клиенты не отваливаются, удалённые теряют доступ сразу.
+
+```bash
+sudo ./wg-peer.sh list                 # кто есть и когда подключался
+sudo ./wg-peer.sh add editor-ivanov    # новый клиент: ключи + PresharedKey, конфиг в /root/wg-clients/
+sudo ./wg-peer.sh rotate editor-ivanov # потерял ноутбук / ушёл: новые ключи, старый конфиг мёртв
+sudo ./wg-peer.sh remove editor-ivanov # доступ больше не нужен
+```
+
+Конфиг передавать по защищённому каналу (не в общий чат), после передачи — `shred -u` на сервере.
+По умолчанию конфиг — split tunnel (VPN, LAN, IP сайта); `--full-tunnel` — весь трафик через шлюз.
 
 ## Порядок переезда
 
@@ -82,9 +99,10 @@ npm run prod
 |---|---|---|
 | ufw `default deny`, SSH только из LAN и VPN | ✅ оставить | В скрипте. На ВМ сайта правило для `10.161.0.0/24` по факту не срабатывает: шлюз маскарадит клиентов, и они приходят с `192.168.0.2`. Оставлено как страховка |
 | `ufw allow <порт WG>/udp` | ✅ критично | Без него однажды пропал доступ к шлюзу. Скрипт добавляет правило до `ufw enable` |
-| Пересылка `wg ↔ eth1` в `before.rules` | ✅ уточнено | Правило `eth1 → wg0` лишнее: обратный трафик и так пропускает стандартное `RELATED,ESTABLISHED`. Добавлены MSS clamping (совет из README `wg_deploy`) и явная пересылка наружу (`WG_FORWARD_TO_INTERNET`) |
-| `net.ipv4.ip_forward = 1` в `/etc/sysctl.conf` | ⚠️ перенести | Перенесено в `sysctl.d`: новые systemd перестают читать `/etc/sysctl.conf` |
-| Интерфейс `wg0` | ❓ проверить | `wg_deploy` создаёт `bay_srv` (`wg-quick@bay_srv`), в дипломе и `before.rules` — `wg0`. `audit.sh` покажет, что на самом деле |
+| Пересылка `wg0 ↔ eth1` в `before.rules` | ❌ не работало | Интерфейс называется `bay_srv`, правила с `wg0` ни разу не сработали. VPN работал, потому что транзит был открыт целиком (`DEFAULT_FORWARD_POLICY="ACCEPT"`, `allow (routed)`), то есть шлюз пересылал любой трафик. Скрипт ставит `deny routed` и правила с настоящим именем интерфейса, плюс MSS clamping и явную пересылку наружу (`WG_FORWARD_TO_INTERNET`). Правило `eth1 → wg` лишнее: обратный трафик пропускает стандартное `RELATED,ESTABLISHED` |
+| `ip_forward` | ✅ уточнено | На шлюзе ставится из `PostUp` конфига `wg_deploy`, а не из `/etc/sysctl.conf`. В скрипте — `sysctl.d` |
+| Права `/etc/wireguard/bay_srv.conf` | ❌ было 644 | Приватный ключ сервера читали все пользователи. Скрипт ставит 600 |
+| journald на шлюзе | ⚠️ без лимита | 893 МБ на диске 10 ГБ. Скрипт ограничивает |
 | sshd: root и пароли запрещены | ❌ не работало | `00-netangels.conf` перебивал основной конфиг: `PermitRootLogin yes`, `PasswordAuthentication yes`. Исправлено drop-in файлом `00-hardening.conf` |
 | fail2ban в цепочке `DOCKER-USER` | ✅ оставить | Уже в репозитории |
 | Доступ к админке по `allowed-ips.conf` | ⚠️ при переезде | Админ заходит по домену через VPN и приходит с **белого IP шлюза** (это написано в `fail2ban/jail.local`), а не из `10.161.0.0/24`, как в листинге 7.1 ВКР. Новый шлюз — новый IP в `allowed-ips.conf` |
@@ -100,15 +118,12 @@ npm run prod
 2. **Лишние клиенты WireGuard.** `wg_deploy` заводит 254 peer-а и хранит приватные ключи всех клиентов
    в `wg_deploy/configs/` на шлюзе. Оставить в серверном конфиге только выданные peer-ы, а клиентские
    конфиги с сервера удалить. `audit.sh` показывает, где они лежат.
-3. **Split tunnel.** Клиенты `wg_deploy` гонят весь трафик через шлюз (`0.0.0.0/0`, DNS 8.8.8.8).
-   Для администрирования достаточно `VPN_NET, LAN_NET, <IP сайта>/32`: новые конфиги скрипт делает так.
-   Когда старых клиентов не останется, можно поставить `WG_FORWARD_TO_INTERNET=app`.
-4. **Порты Docker мимо ufw.** Любой новый `ports:` в compose сразу открыт в интернет, ufw его не
+3. **Порты Docker мимо ufw.** Любой новый `ports:` в compose сразу открыт в интернет, ufw его не
    остановит. Служебные порты публиковать только как `127.0.0.1:порт:порт`.
-5. **HSTS** в `nginx/nginx.conf` (`add_header Strict-Transport-Security "max-age=31536000" always;`),
+4. **HSTS** в `nginx/nginx.conf` (`add_header Strict-Transport-Security "max-age=31536000" always;`),
    как и предлагалось в 8.5 ВКР.
-6. **Закрепить версии образов** `certbot/certbot:latest` и `crazymax/fail2ban:latest`: иначе одна и та же
+5. **Закрепить версии образов** `certbot/certbot:latest` и `crazymax/fail2ban:latest`: иначе одна и та же
    команда на новой ВМ может собрать другой стенд.
-7. **Мелочи в репозитории:** `NGINX_ADMIN_SUBNET` в `.env` нигде не используется;
+6. **Мелочи в репозитории:** `NGINX_ADMIN_SUBNET` в `.env` нигде не используется;
    в локальном `nginx/allowed-ips.conf` указано `172.18.0.0/12` — nginx поймёт это как `172.16.0.0/12`.
-8. **Снапшот в панели NetAngels** перед любыми работами с ufw, sshd и обновлениями релиза.
+7. **Снапшот в панели NetAngels** перед любыми работами с ufw, sshd и обновлениями релиза.

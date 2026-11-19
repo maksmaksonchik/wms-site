@@ -184,6 +184,8 @@ setup_ufw_base() {
   log "UFW: запрет входящих, SSH только из ${SSH_ALLOW_FROM}"
   ufw default deny incoming >/dev/null
   ufw default allow outgoing >/dev/null
+  # Транзит только по явным правилам (на старом шлюзе было allow — открытый роутер)
+  ufw default deny routed >/dev/null
   local net
   for net in $SSH_ALLOW_FROM; do
     ufw allow from "$net" to any port 22 proto tcp comment 'ssh' >/dev/null

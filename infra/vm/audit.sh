@@ -3,6 +3,8 @@
 # Нужен, чтобы сверить живые машины с setup.sh перед переездом.
 #   sudo ./audit.sh > audit-$(hostname).txt
 # Приватные ключи WireGuard в вывод не попадают.
+# Запуск через sh (dash) ломается на bash-синтаксисе: перезапускаемся в bash
+if [ -z "${BASH_VERSION:-}" ]; then exec bash "$0" "$@"; fi
 set -uo pipefail
 
 [[ $EUID -eq 0 ]] || { echo "Запускайте от root: sudo $0" >&2; exit 1; }
@@ -51,15 +53,24 @@ run ufw status verbose
 grep -E '^(DEFAULT_FORWARD_POLICY|IPV6)=' /etc/default/ufw
 echo "--- нестандартное в /etc/ufw/before.rules (forward, nat, wg):"
 grep -nE 'ufw-before-forward -i|ufw-before-forward -o|^\*nat|POSTROUTING|MASQUERADE|TCPMSS|wg|bay_srv' /etc/ufw/before.rules
-echo "--- before.rules изменён относительно пакета?"
-dpkg-query -W -f='${Conffiles}\n' ufw | awk '$1 == "/etc/ufw/before.rules" {print $2}' \
-  | { read -r sum; [[ $(md5sum < /etc/ufw/before.rules | cut -d' ' -f1) == "$sum" ]] && echo "нет" || echo "да"; }
+echo "--- отличия before.rules от шаблона пакета (/usr/share/ufw/before.rules):"
+diff -u /usr/share/ufw/before.rules /etc/ufw/before.rules && echo "нет отличий"
 
 section "iptables"
 run iptables -S FORWARD
-run iptables -S DOCKER-USER
+run iptables -S ufw-before-forward
 run iptables -t nat -S POSTROUTING
-run iptables -S f2b-nginx-flood
+if docker inspect wms_fail2ban >/dev/null 2>&1; then
+  run iptables -S DOCKER-USER
+  # Цепочка появляется только при первом бане — её отсутствие нормально
+  run iptables -S f2b-nginx-flood
+  echo "--- fail2ban изнутри контейнера (там может быть другой бэкенд iptables)"
+  run docker exec wms_fail2ban fail2ban-client status nginx-flood
+  run docker exec wms_fail2ban iptables -V
+  run docker exec wms_fail2ban iptables -S DOCKER-USER
+  run docker exec wms_fail2ban sh -c 'iptables-legacy -S DOCKER-USER 2>&1; iptables-nft -S DOCKER-USER 2>&1'
+  run docker logs --since 24h wms_fail2ban 2>&1 | grep -Ei 'error|ban ' | tail -20
+fi
 
 section "WireGuard"
 run ls -l /etc/wireguard/
