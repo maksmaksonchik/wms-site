@@ -1,8 +1,9 @@
 # For production use only
 
-# Ограничение логов контейнеров (stdout/stderr): без него json-file растёт бесконечно
+# Ограничение логов контейнеров (stdout/stderr). Совпадает с /etc/docker/daemon.json на сервере
+# (драйвер local сжимает логи); задано и здесь, чтобы не зависеть от настроек конкретной машины
 x-logging: &default-logging
-  driver: json-file
+  driver: local
   options:
     max-size: "10m"
     max-file: "5"
