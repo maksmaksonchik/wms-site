@@ -152,6 +152,34 @@ def apply_live():
     finally:
         os.unlink(tmp)
     print(f"    Применено к {WG_IF} на лету (wg syncconf)")
+    sync_routes()
+
+
+def sync_routes():
+    """wg syncconf меняет только peer-ов, а маршруты ставит wg-quick при старте.
+    Приводим маршруты через интерфейс к AllowedIPs из конфига, как сделал бы wg-quick:
+    новым клиентам — добавить, удалённым — убрать. Маршрут подсети от Address не трогаем."""
+    _, iface, peers = load()
+    if (iface.get("Table") or "").lower() == "off":
+        return
+    want = set()
+    for p in peers:
+        for cidr in (p.get("AllowedIPs") or "").split(","):
+            if cidr.strip():
+                net = ipaddress.ip_network(cidr.strip(), strict=False)
+                if net.version == 4:
+                    want.add(str(net))
+    have = set()
+    for line in sh("ip", "-4", "route", "show", "dev", WG_IF).splitlines():
+        if "proto kernel" in line:
+            continue
+        have.add(str(ipaddress.ip_network(line.split()[0], strict=False)))
+    for net in sorted(want - have):
+        sh("ip", "-4", "route", "replace", net, "dev", WG_IF)
+    for net in sorted(have - want):
+        sh("ip", "-4", "route", "del", net, "dev", WG_IF)
+    if want != have:
+        print(f"    Маршруты через {WG_IF}: добавлено {len(want - have)}, убрано {len(have - want)}")
 
 
 # --- помощники --------------------------------------------------------------
@@ -353,6 +381,9 @@ def main():
     p.add_argument("ids", nargs="+")
     p.add_argument("-y", "--yes", action="store_true")
     p.set_defaults(func=cmd_keep)
+
+    p = sub.add_parser("sync", help="применить конфиг к интерфейсу и маршрутам (после ручной правки)")
+    p.set_defaults(func=lambda args: apply_live())
 
     p = sub.add_parser("label", help="дать клиенту имя")
     p.add_argument("id")
