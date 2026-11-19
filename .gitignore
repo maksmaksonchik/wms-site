@@ -73,3 +73,7 @@ nginx/allowed-ips.conf
 # fail2ban
 fail2ban/db/
 fail2ban/log/
+# database dumps
+*.dump
+*.sql
+*.sql.gz
