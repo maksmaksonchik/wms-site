@@ -98,6 +98,21 @@ else
   echo "не установлен"
 fi
 
+section "Бэкапы"
+run systemctl list-timers --all --no-pager 'wms-backup*'
+for u in wms-backup wms-backup-pull; do
+  systemctl cat "$u.service" >/dev/null 2>&1 || continue
+  run systemctl show -p Result -p ExecMainExitTimestamp "$u.service"
+  journalctl -u "$u.service" -n 5 --no-pager 2>&1
+done
+d=/var/backups/wms-site
+if [[ -d $d ]]; then
+  echo "--- $d: $(find "$d" -mindepth 1 -maxdepth 1 -type d ! -name '*.partial' | wc -l) копий, $(du -sh "$d" | cut -f1)"
+  find "$d" -mindepth 1 -maxdepth 1 -type d -printf '%TY-%Tm-%Td %TH:%TM  %f\n' | sort | tail -3
+fi
+[[ -f /var/lib/wms-backup-pull/.ssh/authorized_keys ]] && \
+  echo "--- ключ шлюза для бэкапов: $(awk '{print $NF}' /var/lib/wms-backup-pull/.ssh/authorized_keys)"
+
 section "Обновления и журнал"
 run systemctl is-enabled unattended-upgrades
 run cat /etc/apt/apt.conf.d/20auto-upgrades

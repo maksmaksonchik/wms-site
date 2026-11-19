@@ -1,4 +1,9 @@
 # For running local stage configuration only
+# Имя проекта задано явно: от него зависят имена томов (wms-site_strapi-data,
+# wms-site_strapi-uploads). Иначе оно берётся из имени каталога, и клон в другой
+# каталог молча поднимется с пустыми томами
+name: wms-site
+
 services:
   strapi-db:
     container_name: wms_strapi_db

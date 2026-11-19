@@ -8,6 +8,8 @@
 | `setup.sh vpn` | WireGuard-шлюз: ufw, пересылка VPN → LAN, sshd, автообновления |
 | `setup.sh app` | ВМ сайта: Docker из официального репозитория, `daemon.json`, ufw, клон репозитория в `/opt/wms-site` |
 | `setup.sh finish` | убирает временное правило SSH с белого IP, которое ставится при первом запуске |
+| `setup.sh backup` | только автоматические бэкапы на уже работающей ВМ, остальное не трогает (см. ниже) |
+| `backup-pull.sh` | на шлюзе: забирает бэкапы с ВМ сайта (ставится `setup.sh vpn`, см. ниже) |
 | `wg-peer.sh` | на шлюзе: `list`, `add`, `rotate`, `remove`, `keep`, `label` для клиентов WireGuard, применяется на лету (см. ниже) |
 | `audit.sh` | только читает: снимок текущей настройки для сверки (ключи WireGuard не печатает) |
 | `vm.env.example` | все параметры; скопировать в `vm.env` (он в `.gitignore`) |
@@ -52,12 +54,13 @@ sudo ./wg-peer.sh remove editor-ivanov # доступ больше не нуже
 ```bash
 sudo ./infra/vm/audit.sh > audit-$(hostname).txt        # на обеих ВМ — сверить с vm.env
 sudo cp /etc/wireguard/<WG_IF>.conf ~/                   # шлюз: ключи сервера, чтобы клиенты остались
-cd /opt/wms-site                                         # сайт:
-docker exec wms_strapi_db sh -c 'pg_dump -U "$POSTGRES_USER" -Fc "$POSTGRES_DB"' > strapi-$(date +%F).dump
-docker run --rm -v wms-site_strapi-uploads:/data:ro -v "$PWD":/backup alpine \
-  tar czf /backup/uploads-$(date +%F).tgz -C /data .
-tar czf secrets-$(date +%F).tgz .env backend/.env frontend/.env nginx/allowed-ips.conf certbot/conf
+cd /opt/wms-site && npm run prod:backup                  # сайт: база, загрузки, секреты одним каталогом
 ```
+
+Каталог `/var/backups/wms-site/<дата>_<время>/` с ВМ сайта скопировать к себе: он понадобится на шаге 2.
+В нём `secrets.tar.gz` с паролем базы и ключом TLS, поэтому только по SSH, не через общие чаты.
+История бэкапов на старом шлюзе (`/var/backups/wms-site`) сама не переедет: если она нужна,
+перенесите её на новый шлюз в тот же каталог (владелец `wms-backup`).
 
 Заранее снизить TTL A-записи `zmsh.space` в reg.ru (например до 300), чтобы переключение DNS было быстрым.
 
@@ -69,27 +72,98 @@ cp vm.env.example vm.env && nano vm.env      # WG_IF и WG_RESTORE_CONF — по
 sudo ./setup.sh vpn
 ```
 
+В конце `setup.sh vpn` печатает строку `BACKUP_PULL_PUBKEY="ssh-ed25519 …"` — сохранить её для шага 2.
+
 Клиентам заменить `Endpoint` на новый IP, подключиться, проверить `ssh <user>@192.168.0.2`.
 Потом `sudo ./setup.sh finish`.
 
-**2. Новая ВМ сайта.** Зайти на неё уже через VPN (`ssh <user>@<её LAN-адрес>`) и `sudo ./setup.sh app`.
-Затем перенести данные:
+**2. Новая ВМ сайта.** Зайти на неё уже через VPN (`ssh <user>@<её LAN-адрес>`), вписать в `vm.env`
+строку `BACKUP_PULL_PUBKEY` с шага 1 и запустить `sudo ./setup.sh app`. Перезайти (группа docker)
+и восстановить данные из каталога с шага 0:
 
 ```bash
 cd /opt/wms-site
-tar xzf ~/secrets-*.tgz
-# В nginx/allowed-ips.conf заменить белый IP старого шлюза на новый — иначе админка ответит 403
-docker compose up --no-start                 # создаёт тома
-docker compose start strapi-db
-docker exec -i wms_strapi_db sh -c 'pg_restore -U "$POSTGRES_USER" -d "$POSTGRES_DB" --clean --if-exists --no-owner' < ~/strapi-*.dump
-docker run --rm -v wms-site_strapi-uploads:/data -v ~:/backup alpine tar xzf /backup/uploads-<дата>.tgz -C /data
+npm run prod:restore -- --secrets ~/<дата>_<время>   # секреты, база, загрузки; проверяет суммы
+nano nginx/allowed-ips.conf                           # белый IP старого шлюза → новый, иначе админка 403
 npm run prod
 ```
+
+Что делает `restore.sh` и что делать, если секретов нет, — в [README](../../README.md#бэкап-и-восстановление).
 
 Если на сайт пришлось заходить по белому IP — потом `sudo ./setup.sh finish`.
 
 **3. DNS.** Сменить A-запись, дождаться, проверить сайт и админку через VPN.
 Если `certbot/conf` не переносили — `npm run acme-challenge` уже после смены DNS.
+
+**4. Бэкапы.** На сайте `sudo systemctl start wms-backup`, на шлюзе `sudo systemctl start wms-backup-pull`,
+затем `journalctl -u wms-backup-pull -n 20`: должно быть «Последний бэкап: …». Если новой стала
+только ВМ сайта, а шлюз старый, у сайта новый ключ хоста, и шлюз откажется подключаться:
+`sudo -u wms-backup ssh-keygen -R 192.168.0.1`.
+
+## Автоматические бэкапы
+
+| Где | Что | Когда |
+|---|---|---|
+| ВМ сайта | `wms-backup.timer` → `scripts/backup.sh` от `ADMIN_USER`, копии в `/var/backups/wms-site` | 02:30 (Екб) |
+| Шлюз | `wms-backup-pull.timer` → `/usr/local/sbin/wms-backup-pull` от `wms-backup`, копии в `/var/backups/wms-site` | 03:30 (Екб) |
+
+Оба места хранят копии `BACKUP_KEEP_DAYS` дней (14), но последние `BACKUP_MIN_KEEP` (3) не удаляются
+никогда: если бэкапы перестанут делаться, старые копии не исчезнут вслед за сроком хранения.
+Пропущенный запуск (ВМ была выключена) выполняется сразу после старта.
+
+Копии **забирает шлюз**, а не отправляет сайт. ВМ сайта смотрит в интернет. Если её взломают,
+то, что уже лежит на шлюзе, она не сотрёт и не подменит: у неё нет доступа к шлюзу, а шлюз
+забирает новое без `--delete`. Со своей стороны ВМ сайта пускает шлюз под пользователем
+`wms-backup-pull` только из `LAN_NET`, и только на чтение каталога бэкапов (`rrsync -ro` в
+`authorized_keys`, `restrict`, файл ключей принадлежит root).
+
+Проверка:
+
+```bash
+systemctl list-timers 'wms-backup*'            # когда был и будет запуск
+journalctl -u wms-backup -n 30                 # на сайте
+journalctl -u wms-backup-pull -n 30            # на шлюзе
+systemctl --failed                             # упавший бэкап виден здесь
+```
+
+### Включить на уже работающих ВМ
+
+`setup.sh vpn|app` заодно обновляет систему, переделывает ufw и sshd. Чтобы поставить только
+бэкапы, есть `setup.sh backup`. Роль он определяет сам: шлюз — если есть
+`/etc/wireguard/<WG_IF>.conf`, сайт — если есть `APP_DIR/docker-compose.yml`. Пакеты не обновляет
+(ставит только `rsync`), ufw не трогает. В sshd добавляет одну строку `AllowUsers` в отдельный
+`10-zmsh-backup.conf` и только если `AllowUsers` уже где-то задан: строки из разных файлов sshd
+складывает, а без `AllowUsers` пускает всех и так.
+
+```bash
+# 0. На ВМ сайта код должен быть с scripts/backup.sh: cd /opt/wms-site && git pull
+# 1. Шлюз
+git clone https://github.com/maksmaksonchik/wms-site.git && cd wms-site/infra/vm   # или git pull
+cp vm.env.example vm.env && nano vm.env      # ADMIN_USER, WG_IF, BACKUP_PULL_HOST
+sudo ./setup.sh backup                       # печатает BACKUP_PULL_PUBKEY="ssh-ed25519 …"
+# 2. ВМ сайта
+cd /opt/wms-site/infra/vm
+cp vm.env.example vm.env && nano vm.env      # ADMIN_USER, APP_DIR и BACKUP_PULL_PUBKEY с шага 1
+sudo ./setup.sh backup                       # таймер, доступ для шлюза, предложит сразу сделать бэкап
+# 3. Шлюз: проверить забор
+sudo systemctl start wms-backup-pull && journalctl -u wms-backup-pull -n 20
+```
+
+Повторный запуск безопасен. Позже полный `setup.sh vpn|app` поверх этого тоже ничего не сломает.
+
+`wms-backup-pull` падает, если последнему бэкапу больше 36 часов или его контрольные суммы не сходятся.
+Уведомлений нет, поэтому `systemctl --failed` стоит смотреть при каждом заходе на шлюз (его показывает
+и `audit.sh`). Место: одна копия сейчас ≈ 56 МБ (почти всё — картинки), 14 копий ≈ 0,8 ГБ на диске
+шлюза 10 ГБ. С ростом медиатеки пересчитать `BACKUP_KEEP_DAYS`.
+
+Достать копию со шлюза (файлы там доступны только `wms-backup`):
+
+```bash
+sudo cp -r /var/backups/wms-site/<дата>_<время> ~ && sudo chown -R "$USER:" ~/<дата>_<время>
+```
+
+Обе ВМ стоят у одного хостера. Для защиты от потери аккаунта или дата-центра время от времени
+забирайте свежую копию к себе на ноутбук.
 
 ## Сверка с тем, что сделано сейчас
 
@@ -112,9 +186,9 @@ npm run prod
 
 ## Рекомендации (в скрипт не вошли)
 
-1. **Автоматические бэкапы.** Сейчас `pg_dump` делается вручную, а тома с загрузками не копируются совсем.
-   Минимум: systemd-таймер с ежесуточным `pg_dump` и `tar` тома `strapi-uploads`, хранение 14 дней,
-   копия **на другую машину** (шлюз или внешнее хранилище). Без копии вне ВМ это не бэкап.
+1. **Бэкап вне NetAngels.** Ежесуточные бэкапы теперь есть (см. выше), но сайт и шлюз у одного хостера.
+   Следующий шаг — копия во внешнее хранилище (S3-совместимое, шифрованная) или хотя бы регулярно
+   на ноутбук.
 2. **Лишние клиенты WireGuard.** `wg_deploy` заводит 254 peer-а и хранит приватные ключи всех клиентов
    в `wg_deploy/configs/` на шлюзе. Оставить в серверном конфиге только выданные peer-ы, а клиентские
    конфиги с сервера удалить. `audit.sh` показывает, где они лежат.

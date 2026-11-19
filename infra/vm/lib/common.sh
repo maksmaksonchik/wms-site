@@ -62,7 +62,7 @@ setup_packages() {
   apt-get update -q
   # confold: при вопросах о конфигах оставлять локальную версию
   apt-get -y -q -o Dpkg::Options::=--force-confold upgrade
-  apt-get -y -q install ufw unattended-upgrades needrestart iptables curl git ca-certificates python3
+  apt-get -y -q install ufw unattended-upgrades needrestart iptables curl git ca-certificates python3 rsync
 }
 
 setup_system() {

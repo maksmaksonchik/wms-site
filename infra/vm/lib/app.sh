@@ -61,11 +61,11 @@ role_app() {
 
   cat <<EOF
 
-Дальше вручную (см. infra/vm/README.md, раздел «Переезд»):
-  1. Положить .env, backend/.env, frontend/.env и nginx/allowed-ips.conf
-     (в allowed-ips.conf — белый IP VPN-шлюза, иначе админка будет 403)
-  2. Перенести certbot/conf со старой ВМ или пройти npm run acme-challenge
-  3. Восстановить базу и загрузки, затем npm run prod
-  Чтобы группа docker применилась, перезайдите под $ADMIN_USER.
+Дальше вручную (см. infra/vm/README.md, раздел «Порядок переезда»):
+  1. Перезайти под $ADMIN_USER, cd $APP_DIR
+  2. npm run prod:restore -- --secrets ~/<каталог бэкапа>
+     (без бэкапа секретов — README.md, «Если секретов нет»)
+  3. В nginx/allowed-ips.conf — белый IP VPN-шлюза, иначе админка будет 403
+  4. npm run prod
 EOF
 }

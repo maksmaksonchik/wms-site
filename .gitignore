@@ -77,6 +77,8 @@ fail2ban/log/
 *.dump
 *.sql
 *.sql.gz
+# каталог scripts/backup.sh по умолчанию (если нет /var/backups/wms-site)
+/backups/
 
 # настройки скриптов ВМ
 infra/vm/vm.env
