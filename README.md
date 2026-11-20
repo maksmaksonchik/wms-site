@@ -139,7 +139,8 @@ StrapiCMS будет доступна на <http://127.0.0.1:1337/>
 - **Лимиты CPU и памяти контейнеров** в `docker-compose.yml`. У базы пониженный шанс
   попасть под OOM killer.
 
-Мониторинг — Netdata: `npm run monitoring:up`, `http://192.168.0.1:19999` через VPN.
+Мониторинг — Netdata: `npm run monitoring:up`, `http://192.168.0.1:19999` через VPN;
+графики для нагрузочного теста — `http://192.168.0.1:19999/loadtest.html`.
 Нагрузочные тесты — [`loadtest/README.md`](loadtest/README.md).
 
 ## Бэкап и восстановление

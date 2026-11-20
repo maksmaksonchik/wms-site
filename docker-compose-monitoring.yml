@@ -3,6 +3,7 @@
 #   npm run monitoring:up      — запустить
 #   http://192.168.0.1:19999   — открыть через VPN (порт открыт в UFW только для LAN:
 #                                sudo infra/vm/setup.sh firewall)
+#   http://192.168.0.1:19999/loadtest.html — только графики для нагрузочного теста
 # Отдельный проект, а не сервис в docker-compose.yml: иначе npm run prod
 # (down --remove-orphans) останавливал бы мониторинг при каждом деплое
 name: wms-monitoring
@@ -34,6 +35,8 @@ services:
     volumes:
       - netdata-config:/etc/netdata
       - ./netdata/go.d/nginx.conf:/etc/netdata/go.d/nginx.conf:ro
+      # Дашборд нагрузочного теста: http://<ВМ>:19999/loadtest.html
+      - ./netdata/web/loadtest.html:/usr/share/netdata/web/loadtest.html:ro
       - netdata-lib:/var/lib/netdata
       - netdata-cache:/var/cache/netdata
       - /:/host/root:ro,rslave

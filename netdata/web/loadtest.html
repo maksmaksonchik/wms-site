@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ЗМШ — нагрузочный тест</title>
+<!--
+  Дашборд для нагрузочного теста: только те графики Netdata, что разобраны в
+  loadtest/README.md («Что смотреть в Netdata»). Отдаётся самим Netdata:
+  http://<адрес ВМ>:19999/loadtest.html (файл смонтирован в его веб-каталог,
+  см. docker-compose-monitoring.yml). Данные — из локального API агента, без Cloud.
+  Параметры адреса: ?iface=eth0 — публичный интерфейс; ?window=900 — окно в секундах;
+  ?theme=light|dark — тема (по умолчанию как в системе).
+-->
+<style>
+  .viz-root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    /* Контейнеры — слоты 1–4, цвет закреплён за контейнером на всех графиках */
+    --c-front: #2a78d6;
+    --c-strapi: #eb6834;
+    --c-db: #1baf7a;
+    --c-nginx: #eda100;
+    /* Метрики ВМ — слоты 7 и 5, чтобы не путать с контейнерами */
+    --c-main: #6250d6;
+    --c-second: #e87ba4;
+    --good: #0ca30c;
+    --warning: #fab219;
+    --critical: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface-1: #1a1a19;
+      --text-primary: #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255, 255, 255, 0.10);
+      --c-front: #3987e5;
+      --c-strapi: #d95926;
+      --c-db: #199e70;
+      --c-nginx: #c98500;
+      --c-main: #9085e9;
+      --c-second: #d55181;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface-1: #1a1a19;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --c-front: #3987e5;
+    --c-strapi: #d95926;
+    --c-db: #199e70;
+    --c-nginx: #c98500;
+    --c-main: #9085e9;
+    --c-second: #d55181;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body.viz-root {
+    background: var(--page);
+    color: var(--text-primary);
+    font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 20px 24px 40px;
+  }
+  header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0; }
+  .updated { color: var(--text-secondary); font-size: 13px; }
+
+  .filters { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin: 16px 0; }
+  .filters label { display: flex; gap: 6px; align-items: center; color: var(--text-secondary); font-size: 13px; }
+  select, button {
+    font: inherit; font-size: 13px; color: var(--text-primary);
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px;
+  }
+  button { cursor: pointer; }
+  button[aria-pressed="true"] { border-color: var(--text-secondary); font-weight: 600; }
+
+  .status { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tile {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; min-width: 200px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .tile .icon {
+    width: 20px; height: 20px; border-radius: 50%; flex: none; margin-top: 1px;
+    display: grid; place-items: center; color: #fff; font-size: 13px; font-weight: 700;
+  }
+  .tile[data-state="good"] .icon { background: var(--good); }
+  .tile[data-state="warning"] .icon { background: var(--warning); color: #0b0b0b; }
+  .tile[data-state="critical"] .icon { background: var(--critical); }
+  .tile[data-state="unknown"] .icon { background: var(--text-muted); }
+  .tile .name { color: var(--text-secondary); font-size: 12px; }
+  .tile .value { font-size: 15px; font-weight: 600; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 16px 12px; position: relative;
+  }
+  .card h2 { font-size: 14px; font-weight: 600; margin: 0; }
+  .card .hint { color: var(--text-secondary); font-size: 12px; margin: 2px 0 8px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+  .legend span.key { display: inline-block; width: 14px; height: 2px; border-radius: 1px; vertical-align: middle; margin-right: 5px; }
+  .legend b { color: var(--text-primary); font-weight: 600; margin-left: 4px; }
+  .plot { position: relative; }
+  .plot svg { display: block; width: 100%; height: 200px; overflow: visible; }
+  .plot svg:focus { outline: 2px solid var(--text-secondary); outline-offset: 2px; border-radius: 2px; }
+  .empty { color: var(--text-secondary); font-size: 13px; padding: 70px 8px; text-align: center; }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 2; display: none;
+    background: var(--surface-1); border: 1px solid var(--border); border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); padding: 6px 10px; font-size: 12px; white-space: nowrap;
+  }
+  .tooltip .time { color: var(--text-secondary); margin-bottom: 2px; }
+  .tooltip .row { display: flex; align-items: center; gap: 6px; }
+  .tooltip .row b { font-weight: 600; color: var(--text-primary); min-width: 56px; }
+  .tooltip .row span.n { color: var(--text-secondary); }
+  .tooltip span.key { display: inline-block; width: 12px; height: 2px; border-radius: 1px; }
+
+  table.values { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; font-variant-numeric: tabular-nums; }
+  table.values th, table.values td { text-align: right; padding: 3px 6px; border-top: 1px solid var(--grid); }
+  table.values th:first-child, table.values td:first-child { text-align: left; }
+  table.values th { color: var(--text-secondary); font-weight: 500; }
+  .tablehidden table.values { display: none; }
+
+  svg text { font-size: 11px; fill: var(--text-muted); font-variant-numeric: tabular-nums; }
+  svg text.endlabel { fill: var(--text-secondary); font-variant-numeric: normal; }
+  svg text.reflabel { fill: var(--text-secondary); }
+  footer { margin-top: 20px; color: var(--text-secondary); font-size: 12px; }
+  footer code { font-size: 12px; }
+</style>
+</head>
+<body class="viz-root tablehidden">
+<header>
+  <h1>Нагрузочный тест — ВМ сайта</h1>
+  <span class="updated" id="updated">загрузка…</span>
+</header>
+
+<div class="filters">
+  <label>Окно
+    <select id="window">
+      <option value="300">5 минут</option>
+      <option value="900" selected>15 минут</option>
+      <option value="1800">30 минут</option>
+      <option value="3600">1 час</option>
+    </select>
+  </label>
+  <label>Публичный интерфейс <select id="iface"></select></label>
+  <button id="pause" aria-pressed="false">Пауза</button>
+  <button id="tablebtn" aria-pressed="false">Таблица значений</button>
+</div>
+
+<div class="status" id="status"></div>
+<div class="grid" id="grid"></div>
+
+<footer>
+  Что означают графики и когда останавливать тест — <code>loadtest/README.md</code>, раздел
+  «Что смотреть в Netdata». Полный интерфейс Netdata — <a href="/">на главной</a>.
+</footer>
+
+<script>
+"use strict";
+
+// --- что показываем ----------------------------------------------------------
+const CONTAINERS = [
+  { id: "wms_front", name: "front", color: "--c-front" },
+  { id: "wms_strapi", name: "strapi", color: "--c-strapi" },
+  { id: "wms_strapi_db", name: "db", color: "--c-db" },
+  { id: "wms_nginx", name: "nginx", color: "--c-nginx" },
+];
+
+// Каждый график: откуда данные и как их показать. Источники:
+//   containers — контекст cgroup.* по всем контейнерам (API v3, разбивка по instance)
+//   chart      — один график по id (API v1), выбранные измерения
+const CHARTS = [
+  {
+    title: "CPU контейнеров", unit: "%", hint: "100% = одно ядро. front у 100% — потолок рендера Node",
+    source: { type: "containers", context: "cgroup.cpu" },
+    ref: { value: 100, label: "1 ядро" },
+  },
+  {
+    title: "Упор в лимит CPU (throttled)", unit: "%", hint: "Больше нуля — контейнеру мало cpus из docker-compose.yml",
+    source: { type: "containers", context: "cgroup.throttled", only: ["wms_front", "wms_strapi"] },
+  },
+  {
+    title: "Память контейнеров", unit: "%", hint: "Процент от mem_limit. Выше 90% — близко к OOM kill",
+    source: { type: "containers", context: "cgroup.mem_utilization", only: ["wms_front", "wms_strapi", "wms_nginx"] },
+    ref: { value: 90, label: "90%" },
+  },
+  {
+    title: "CPU ВМ: steal и iowait", unit: "%", hint: "steal выше 10% — CPU отъедают соседи по хосту; iowait — ждём диск",
+    source: { type: "chart", chart: "system.cpu", dims: [
+      { dim: "steal", name: "steal", color: "--c-main" },
+      { dim: "iowait", name: "iowait", color: "--c-second" },
+    ] },
+    ref: { value: 10, label: "10%" },
+  },
+  {
+    title: "Память ВМ", unit: "МБ", hint: "Свободно меньше 300 МБ и растёт swap — памяти не хватает",
+    source: { type: "chart", chart: "mem.available", dims: [{ dim: "avail", name: "свободно", color: "--c-main" }],
+      extra: { chart: "mem.swap", dims: [{ dim: "used", name: "swap", color: "--c-second" }] } },
+    ref: { value: 300, label: "300 МБ" },
+  },
+  {
+    title: "Сеть", unit: "Мбит/с", hint: "Отдача упёрлась в одно число — это потолок канала",
+    source: { type: "chart", chart: () => "net." + state.iface, scale: v => Math.abs(v) / 1000, dims: [
+      { dim: "sent", name: "отдача", color: "--c-main" },
+      { dim: "received", name: "приём", color: "--c-second" },
+    ] },
+  },
+  {
+    title: "nginx: запросов в секунду", unit: "/с", hint: "Меньше, чем http_reqs в k6, — запросы теряются по дороге",
+    source: { type: "chart", chart: "nginx_wms_nginx.requests", dims: [{ dim: "requests", name: "запросы", color: "--c-main" }] },
+    missingHint: "Нет nginx_wms_nginx.requests: запущен ли сайт и смонтирован ли netdata/go.d/nginx.conf?",
+  },
+  {
+    title: "nginx: соединения", unit: "", hint: "Растёт writing — nginx ждёт Next или медленно отдаёт клиентам",
+    source: { type: "chart", chart: "nginx_wms_nginx.connections", dims: [{ dim: "active", name: "всего", color: "--c-main" }],
+      extra: { chart: "nginx_wms_nginx.connections_statuses", dims: [{ dim: "writing", name: "writing", color: "--c-second" }] } },
+    missingHint: "Нет nginx_wms_nginx.connections: запущен ли сайт и смонтирован ли netdata/go.d/nginx.conf?",
+  },
+];
+
+// --- состояние и настройки ----------------------------------------------------
+const params = new URLSearchParams(location.search);
+// ?theme=light|dark — принудительная тема, иначе как в системе
+if (["light", "dark"].includes(params.get("theme"))) document.documentElement.dataset.theme = params.get("theme");
+const state = {
+  window: Number(params.get("window")) || 900,
+  iface: params.get("iface") || "",
+  paused: false,
+  lastFresh: 0,
+};
+const REFRESH_MS = 2000;
+const MAX_POINTS = 300;
+
+const css = name => getComputedStyle(document.body).getPropertyValue(name).trim();
+
+// --- данные ------------------------------------------------------------------
+async function getJSON(url) {
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error(r.status + " " + url);
+  return r.json();
+}
+
+function points() { return Math.min(MAX_POINTS, state.window); }
+
+// v1: один график. Строки идут от новых к старым; приводим к [t, ...] по возрастанию
+async function fetchChart(chart, dims, scale) {
+  const url = `/api/v1/data?chart=${encodeURIComponent(chart)}&after=-${state.window}` +
+    `&points=${points()}&format=json&options=seconds`;
+  let d;
+  try { d = await getJSON(url); } catch (e) { return null; }
+  if (!d || !Array.isArray(d.labels) || !Array.isArray(d.data)) return null;
+  const idx = dims.map(x => d.labels.indexOf(x.dim));
+  const rows = d.data.slice().sort((a, b) => a[0] - b[0]);
+  return dims.map((x, i) => ({
+    name: x.name, color: x.color,
+    values: idx[i] < 0 ? [] : rows.map(r => [r[0], r[idx[i]] == null ? null : (scale ? scale(r[idx[i]]) : r[idx[i]])]),
+  })).filter(s => s.values.length);
+}
+
+// v3: контекст по всем контейнерам. Подпись столбца — «cgroup_<имя>.<метрика>@<guid>».
+// aggregation=sum обязателен: по умолчанию измерения контейнера (у cgroup.cpu — user
+// и system) усредняются, и загруженное на 100% ядро показывалось бы как 50%
+async function fetchContainers(context, only) {
+  const url = `/api/v3/data?contexts=${encodeURIComponent(context)}&group_by=instance&aggregation=sum` +
+    `&after=-${state.window}&points=${points()}&format=json2&options=seconds`;
+  let d;
+  try { d = await getJSON(url); } catch (e) { return null; }
+  const res = d && d.result;
+  if (!res || !Array.isArray(res.labels)) return null;
+  const names = res.labels.map(l => {
+    const m = /^cgroup_(.+)\.[^.@]+(@.*)?$/.exec(l);
+    return m ? m[1] : null;
+  });
+  const rows = res.data.slice().sort((a, b) => a[0] - b[0]);
+  const wanted = CONTAINERS.filter(c => !only || only.includes(c.id));
+  return wanted.map(c => {
+    const i = names.indexOf(c.id);
+    if (i < 0) return null;
+    return {
+      name: c.name, color: c.color,
+      values: rows.map(r => {
+        const cell = r[i];
+        const v = Array.isArray(cell) ? cell[0] : cell;
+        return [r[0], v == null ? null : v];
+      }),
+    };
+  }).filter(Boolean);
+}
+
+async function fetchFor(cfg) {
+  const s = cfg.source;
+  if (s.type === "containers") return fetchContainers(s.context, s.only);
+  const chart = typeof s.chart === "function" ? s.chart() : s.chart;
+  const main = await fetchChart(chart, s.dims, s.scale);
+  if (!s.extra) return main;
+  const extra = await fetchChart(s.extra.chart, s.extra.dims, s.extra.scale);
+  if (!main && !extra) return null;
+  return [...(main || []), ...(extra || [])];
+}
+
+// --- форматирование ------------------------------------------------------------
+function fmt(v, unit) {
+  if (v == null || Number.isNaN(v)) return "—";
+  const a = Math.abs(v);
+  const n = a >= 1000 ? Math.round(v).toLocaleString("ru-RU")
+    : a >= 100 ? v.toFixed(0) : a >= 10 ? v.toFixed(1) : v.toFixed(2);
+  return unit === "%" ? n + "%" : unit ? n + " " + unit : n;
+}
+const timeFmt = t => new Date(t * 1000).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+const timeShort = t => new Date(t * 1000).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+
+// «Круглые» деления оси: 1, 2, 2.5, 5 × 10^n
+function niceTicks(max, count = 4) {
+  if (!(max > 0)) max = 1;
+  const raw = max / count;
+  const p = Math.pow(10, Math.floor(Math.log10(raw)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * p).find(s => s >= raw);
+  const ticks = [];
+  for (let v = 0; v <= max + step * 0.001; v += step) ticks.push(+v.toFixed(10));
+  if (ticks[ticks.length - 1] < max) ticks.push(+(ticks[ticks.length - 1] + step).toFixed(10));
+  return ticks;
+}
+
+function stats(values) {
+  const v = values.map(x => x[1]).filter(x => x != null);
+  if (!v.length) return { now: null, avg: null, max: null };
+  let now = null;
+  for (let i = values.length - 1; i >= 0; i--) if (values[i][1] != null) { now = values[i][1]; break; }
+  return { now, avg: v.reduce((a, b) => a + b, 0) / v.length, max: Math.max(...v) };
+}
+
+// --- отрисовка -----------------------------------------------------------------
+const SVGNS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+function makeCard(cfg) {
+  const card = document.createElement("section");
+  card.className = "card";
+  const h = document.createElement("h2"); h.textContent = cfg.title; card.appendChild(h);
+  const hint = document.createElement("div"); hint.className = "hint"; hint.textContent = cfg.hint; card.appendChild(hint);
+  const legend = document.createElement("div"); legend.className = "legend"; card.appendChild(legend);
+  const plot = document.createElement("div"); plot.className = "plot"; card.appendChild(plot);
+  const tip = document.createElement("div"); tip.className = "tooltip"; plot.appendChild(tip);
+  const table = document.createElement("table"); table.className = "values"; card.appendChild(table);
+  cfg.dom = { card, legend, plot, tip, table, svg: null, empty: null };
+  cfg.hover = null;
+  return card;
+}
+
+function renderLegend(cfg, series) {
+  const L = cfg.dom.legend;
+  L.replaceChildren();
+  for (const s of series) {
+    const item = document.createElement("span");
+    const key = document.createElement("span"); key.className = "key"; key.style.background = css(s.color);
+    item.appendChild(key);
+    item.appendChild(document.createTextNode(s.name));
+    const b = document.createElement("b"); b.textContent = fmt(stats(s.values).now, cfg.unit);
+    item.appendChild(b);
+    L.appendChild(item);
+  }
+}
+
+function renderTable(cfg, series) {
+  const T = cfg.dom.table;
+  T.replaceChildren();
+  const head = T.insertRow();
+  for (const t of ["", "сейчас", "среднее", "максимум"]) {
+    const th = document.createElement("th"); th.textContent = t; head.appendChild(th);
+  }
+  for (const s of series) {
+    const st = stats(s.values);
+    const r = T.insertRow();
+    for (const v of [s.name, fmt(st.now, cfg.unit), fmt(st.avg, cfg.unit), fmt(st.max, cfg.unit)]) {
+      r.insertCell().textContent = v;
+    }
+  }
+}
+
+function renderEmpty(cfg, text) {
+  const P = cfg.dom.plot;
+  if (cfg.dom.svg) { cfg.dom.svg.remove(); cfg.dom.svg = null; }
+  if (!cfg.dom.empty) { cfg.dom.empty = document.createElement("div"); cfg.dom.empty.className = "empty"; P.appendChild(cfg.dom.empty); }
+  cfg.dom.empty.textContent = text;
+  cfg.dom.legend.replaceChildren();
+  cfg.dom.table.replaceChildren();
+}
+
+function renderChart(cfg, series) {
+  const P = cfg.dom.plot;
+  if (cfg.dom.empty) { cfg.dom.empty.remove(); cfg.dom.empty = null; }
+  const W = Math.max(280, P.clientWidth), H = 200;
+  const m = { l: 44, r: 64, t: 10, b: 22 };
+  const iw = W - m.l - m.r, ih = H - m.t - m.b;
+
+  const all = series.flatMap(s => s.values);
+  const t0 = Math.min(...all.map(v => v[0])), t1 = Math.max(...all.map(v => v[0]));
+  let vmax = Math.max(0, ...all.map(v => v[1] ?? 0));
+  // Опорная линия видна, только если данные к ней хотя бы приблизились
+  const showRef = cfg.ref && vmax >= cfg.ref.value * 0.5;
+  if (showRef) vmax = Math.max(vmax, cfg.ref.value);
+  const ticks = niceTicks(vmax * 1.05 || 1);
+  const ymax = ticks[ticks.length - 1];
+  const x = t => m.l + (t1 === t0 ? iw : (t - t0) / (t1 - t0) * iw);
+  const y = v => m.t + ih - v / ymax * ih;
+
+  let svg = cfg.dom.svg;
+  if (!svg) {
+    svg = el("svg", { role: "img", tabindex: "0" });
+    P.insertBefore(svg, cfg.dom.tip);
+    cfg.dom.svg = svg;
+    attachHover(cfg);
+  }
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("aria-label", cfg.title + ": " + series.map(s => s.name + " " + fmt(stats(s.values).now, cfg.unit)).join(", "));
+  svg.replaceChildren();
+
+  // Сетка и подписи оси Y
+  for (const tv of ticks) {
+    el("line", { x1: m.l, x2: m.l + iw, y1: y(tv), y2: y(tv), stroke: css(tv === 0 ? "--axis" : "--grid"), "stroke-width": 1 }, svg);
+    el("text", { x: m.l - 6, y: y(tv) + 4, "text-anchor": "end" }, svg).textContent = fmt(tv, "");
+  }
+  // Подписи оси X: 4 отметки времени
+  for (let i = 0; i <= 3; i++) {
+    const t = t0 + (t1 - t0) * i / 3;
+    el("text", { x: x(t), y: H - 6, "text-anchor": i === 0 ? "start" : i === 3 ? "end" : "middle" }, svg).textContent = timeShort(t);
+  }
+  // Опорная линия — сплошная волосяная, с подписью справа
+  if (showRef) {
+    el("line", { x1: m.l, x2: m.l + iw, y1: y(cfg.ref.value), y2: y(cfg.ref.value), stroke: css("--text-secondary"), "stroke-width": 1, opacity: 0.6 }, svg);
+    // Подпись слева: справа живут подписи концов линий
+    el("text", { x: m.l + 4, y: y(cfg.ref.value) - 4, "text-anchor": "start", class: "reflabel" }, svg).textContent = cfg.ref.label;
+  }
+  // Линии: разрывы там, где данных нет
+  for (const s of series) {
+    let d = "", pen = false;
+    for (const [t, v] of s.values) {
+      if (v == null) { pen = false; continue; }
+      d += (pen ? "L" : "M") + x(t).toFixed(1) + "," + y(v).toFixed(1);
+      pen = true;
+    }
+    el("path", { d, fill: "none", stroke: css(s.color), "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" }, svg);
+  }
+  // Подписи у концов линий. Пересекаются — подпись пропускаем, её несёт легенда
+  const placed = [];
+  const ends = series.map(s => {
+    for (let i = s.values.length - 1; i >= 0; i--) if (s.values[i][1] != null) return { s, t: s.values[i][0], v: s.values[i][1] };
+    return null;
+  }).filter(Boolean).sort((a, b) => y(a.v) - y(b.v));
+  for (const e of ends) {
+    const yy = y(e.v);
+    if (placed.some(p => Math.abs(p - yy) < 12)) continue;
+    placed.push(yy);
+    el("circle", { cx: x(e.t), cy: yy, r: 3, fill: css(e.s.color), stroke: css("--surface-1"), "stroke-width": 2 }, svg);
+    el("text", { x: x(e.t) + 8, y: yy + 4, class: "endlabel" }, svg).textContent = e.s.name;
+  }
+  // Слой наведения
+  cfg.geom = { m, iw, ih, W, H, x, y, t0, t1, series };
+  const cross = el("line", { y1: m.t, y2: m.t + ih, stroke: css("--text-muted"), "stroke-width": 1, visibility: "hidden" }, svg);
+  cfg.dom.cross = cross;
+  el("rect", { x: m.l, y: m.t, width: iw, height: ih, fill: "transparent", class: "hit" }, svg);
+  if (cfg.hover != null) showHover(cfg, cfg.hover);
+}
+
+function nearestIndex(values, t) {
+  let best = 0, bd = Infinity;
+  values.forEach((v, i) => { const d = Math.abs(v[0] - t); if (d < bd) { bd = d; best = i; } });
+  return best;
+}
+
+function showHover(cfg, t) {
+  const g = cfg.geom;
+  if (!g || !g.series.length) return;
+  const ref = g.series[0].values;
+  const i = nearestIndex(ref, t);
+  const tt = ref[i][0];
+  cfg.hover = tt;
+  const xx = g.x(tt);
+  cfg.dom.cross.setAttribute("x1", xx);
+  cfg.dom.cross.setAttribute("x2", xx);
+  cfg.dom.cross.setAttribute("visibility", "visible");
+  const tip = cfg.dom.tip;
+  tip.replaceChildren();
+  const time = document.createElement("div"); time.className = "time"; time.textContent = timeFmt(tt); tip.appendChild(time);
+  for (const s of g.series) {
+    const j = nearestIndex(s.values, tt);
+    const row = document.createElement("div"); row.className = "row";
+    const key = document.createElement("span"); key.className = "key"; key.style.background = css(s.color);
+    const b = document.createElement("b"); b.textContent = fmt(s.values[j][1], cfg.unit);
+    const n = document.createElement("span"); n.className = "n"; n.textContent = s.name;
+    row.append(key, b, n);
+    tip.appendChild(row);
+  }
+  tip.style.display = "block";
+  const plotW = cfg.dom.plot.clientWidth;
+  const px = xx / g.W * plotW;
+  const left = px + 12 + tip.offsetWidth > plotW ? px - 12 - tip.offsetWidth : px + 12;
+  tip.style.left = left + "px";
+  tip.style.top = "8px";
+}
+
+function hideHover(cfg) {
+  cfg.hover = null;
+  if (cfg.dom.cross) cfg.dom.cross.setAttribute("visibility", "hidden");
+  cfg.dom.tip.style.display = "none";
+}
+
+function attachHover(cfg) {
+  const svg = cfg.dom.svg;
+  svg.addEventListener("pointermove", ev => {
+    const g = cfg.geom; if (!g) return;
+    const r = svg.getBoundingClientRect();
+    const sx = (ev.clientX - r.left) / r.width * g.W;
+    if (sx < g.m.l || sx > g.m.l + g.iw) { hideHover(cfg); return; }
+    showHover(cfg, g.t0 + (sx - g.m.l) / g.iw * (g.t1 - g.t0));
+  });
+  svg.addEventListener("pointerleave", () => hideHover(cfg));
+  svg.addEventListener("blur", () => hideHover(cfg));
+  svg.addEventListener("keydown", ev => {
+    const g = cfg.geom; if (!g || !g.series.length) return;
+    const vals = g.series[0].values;
+    let i = cfg.hover == null ? vals.length - 1 : nearestIndex(vals, cfg.hover);
+    if (ev.key === "ArrowLeft") i = Math.max(0, i - 1);
+    else if (ev.key === "ArrowRight") i = Math.min(vals.length - 1, i + 1);
+    else if (ev.key === "Escape") { hideHover(cfg); return; }
+    else return;
+    ev.preventDefault();
+    showHover(cfg, vals[i][0]);
+  });
+}
+
+// --- плашки состояния ---------------------------------------------------------
+function tile(name, stateName, value) {
+  const t = document.createElement("div");
+  t.className = "tile"; t.dataset.state = stateName;
+  const icon = document.createElement("span"); icon.className = "icon";
+  icon.textContent = { good: "✓", warning: "!", critical: "✕", unknown: "?" }[stateName];
+  const body = document.createElement("div");
+  const n = document.createElement("div"); n.className = "name"; n.textContent = name;
+  const v = document.createElement("div"); v.className = "value"; v.textContent = value;
+  body.append(n, v); t.append(icon, body);
+  return t;
+}
+
+async function renderStatus() {
+  const box = document.getElementById("status");
+  const tiles = [];
+  const oom = await fetchChart("mem.oom_kill", [{ dim: "kills", name: "kills" }]);
+  const oomMax = oom && oom[0] ? stats(oom[0].values).max : null;
+  tiles.push(oomMax == null ? tile("OOM kill за окно", "unknown", "нет данных")
+    : oomMax > 0 ? tile("OOM kill за окно", "critical", "были — смотрите docker ps")
+    : tile("OOM kill за окно", "good", "не было"));
+
+  const q = await fetchChart("ip.tcp_accept_queue", [{ dim: "overflows", name: "o" }, { dim: "drops", name: "d" }]);
+  const qMax = q && q.length ? Math.max(...q.map(s => stats(s.values).max ?? 0)) : null;
+  tiles.push(qMax == null ? tile("Очередь приёма TCP", "unknown", "нет данных")
+    : qMax > 0 ? tile("Очередь приёма TCP", "warning", "отбрасывала: до " + fmt(qMax, "/с"))
+    : tile("Очередь приёма TCP", "good", "без потерь"));
+
+  // Последняя точка отстаёт на свой шаг (окно / число точек): у часового окна это 12 с
+  const age = state.lastFresh ? Date.now() / 1000 - state.lastFresh : Infinity;
+  const allowed = 10 + 2 * state.window / points();
+  tiles.push(age < allowed ? tile("Свежесть данных", "good", "обновлены " + Math.round(age) + " с назад")
+    : tile("Свежесть данных", "critical", state.lastFresh ? "нет данных " + Math.round(age) + " с — ВМ захлебнулась?" : "нет данных"));
+  box.replaceChildren(...tiles);
+}
+
+// --- цикл обновления ------------------------------------------------------------
+let inFlight = false;
+async function refresh() {
+  if (state.paused || inFlight) return;
+  inFlight = true;
+  try { await refreshOnce(); } finally { inFlight = false; }
+}
+
+async function refreshOnce() {
+  let newest = 0;
+  await Promise.all(CHARTS.map(async cfg => {
+    const series = await fetchFor(cfg);
+    const ok = series && series.length && series.some(s => s.values.some(v => v[1] != null));
+    if (!ok) {
+      const what = cfg.source.type === "containers" ? `${cfg.source.context} для wms_*`
+        : (typeof cfg.source.chart === "function" ? cfg.source.chart() : cfg.source.chart);
+      renderEmpty(cfg, cfg.missingHint || `Нет данных: ${what}`);
+      return;
+    }
+    for (const s of series) for (const v of s.values) if (v[1] != null && v[0] > newest) newest = v[0];
+    renderLegend(cfg, series);
+    renderChart(cfg, series);
+    renderTable(cfg, series);
+  }));
+  if (newest) state.lastFresh = newest;
+  await renderStatus();
+  document.getElementById("updated").textContent = "обновлено " + new Date().toLocaleTimeString("ru-RU");
+}
+
+// Публичный интерфейс: всё net.*, кроме docker, мостов, veth, VPN и петли
+async function initIfaces() {
+  const sel = document.getElementById("iface");
+  let names = [];
+  try {
+    const d = await getJSON("/api/v1/charts");
+    names = Object.keys(d.charts).filter(k => k.startsWith("net.")).map(k => k.slice(4))
+      .filter(n => !/^(lo|docker|br-|veth|wg|bay_|vpndirect|tun|outline|virbr)/.test(n)).sort();
+  } catch (e) { /* без списка — только из адреса */ }
+  if (state.iface && !names.includes(state.iface)) names.unshift(state.iface);
+  if (!state.iface) state.iface = names.find(n => n === "eth0") || names.find(n => /^(eth|ens|enp|eno)/.test(n)) || names[0] || "eth0";
+  for (const n of names) {
+    const o = document.createElement("option"); o.value = n; o.textContent = n; sel.appendChild(o);
+  }
+  sel.value = state.iface;
+  sel.addEventListener("change", () => { state.iface = sel.value; refresh(); });
+}
+
+function init() {
+  const grid = document.getElementById("grid");
+  for (const cfg of CHARTS) grid.appendChild(makeCard(cfg));
+
+  const win = document.getElementById("window");
+  if ([...win.options].some(o => Number(o.value) === state.window)) win.value = String(state.window);
+  win.addEventListener("change", () => { state.window = Number(win.value); refresh(); });
+
+  const pause = document.getElementById("pause");
+  pause.addEventListener("click", () => {
+    state.paused = !state.paused;
+    pause.setAttribute("aria-pressed", String(state.paused));
+    pause.textContent = state.paused ? "Продолжить" : "Пауза";
+    if (!state.paused) refresh();
+  });
+  const tb = document.getElementById("tablebtn");
+  tb.addEventListener("click", () => {
+    const on = document.body.classList.toggle("tablehidden") === false;
+    tb.setAttribute("aria-pressed", String(on));
+  });
+
+  initIfaces().then(refresh);
+  setInterval(refresh, REFRESH_MS);
+  let rt;
+  new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(refresh, 150); }).observe(grid);
+}
+init();
+</script>
+</body>
+</html>
