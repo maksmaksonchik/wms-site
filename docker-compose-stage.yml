@@ -37,11 +37,18 @@ services:
   nginx:
     container_name: wms_nginx
     restart: always
-    image: nginx:1.30-alpine
+    # Тот же образ, что в проде: в нём основной конфиг и include-файлы (nginx/Dockerfile)
+    build:
+      context: nginx/
+      dockerfile: Dockerfile
     env_file: .env
+    ulimits:
+      nofile: 65536
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template
       - ./nginx/allowed-ips.conf:/etc/nginx/allowed-ips.conf
+      - ./nginx/limit-exempt.conf:/etc/nginx/limit-exempt.conf:ro
+      - nginx-cache:/var/cache/nginx
       - ./nginx/site.crt:/etc/letsencrypt/live/${NGINX_SERVER_NAME}/fullchain.pem
       - ./nginx/site.key:/etc/letsencrypt/live/${NGINX_SERVER_NAME}/privkey.pem
       - ./certbot/conf:/etc/letsencrypt
@@ -57,3 +64,4 @@ services:
 volumes:
   strapi-data:
   strapi-uploads:
+  nginx-cache:

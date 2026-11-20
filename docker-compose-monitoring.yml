@@ -1,0 +1,55 @@
+# Мониторинг ВМ сайта: Netdata (CPU, память, диск, сеть — по хосту и по каждому
+# контейнеру, плюс соединения nginx). Посекундные графики, история хранится локально.
+#   npm run monitoring:up      — запустить
+#   http://192.168.0.1:19999   — открыть через VPN (порт открыт в UFW только для LAN:
+#                                sudo infra/vm/setup.sh firewall)
+# Отдельный проект, а не сервис в docker-compose.yml: иначе npm run prod
+# (down --remove-orphans) останавливал бы мониторинг при каждом деплое
+name: wms-monitoring
+
+services:
+  netdata:
+    image: netdata/netdata:stable
+    container_name: wms_netdata
+    restart: unless-stopped
+    # Сеть и PID хоста — так Netdata видит весь хост и все контейнеры. Слушает 19999
+    # на всех адресах хоста, снаружи порт закрыт UFW (в отличие от ports: в compose,
+    # network_mode: host UFW не обходит)
+    network_mode: host
+    pid: host
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    mem_limit: 512m
+    environment:
+      # Без телеметрии и без Netdata Cloud: агент не привязан к облаку, данные не уходят
+      - DO_NOT_TRACK=1
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - netdata-config:/etc/netdata
+      - ./netdata/go.d/nginx.conf:/etc/netdata/go.d/nginx.conf:ro
+      - netdata-lib:/var/lib/netdata
+      - netdata-cache:/var/cache/netdata
+      - /:/host/root:ro,rslave
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /var/log:/host/var/log:ro
+      # Только чтобы показывать имена контейнеров вместо id. Внимание: даже :ro сокет
+      # даёт полный доступ к docker API, то есть к root на хосте. Поэтому порт Netdata
+      # должен быть доступен только из LAN/VPN
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+volumes:
+  netdata-config:
+  netdata-lib:
+  netdata-cache:

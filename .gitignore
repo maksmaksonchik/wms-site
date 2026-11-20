@@ -82,3 +82,6 @@ fail2ban/log/
 
 # настройки скриптов ВМ
 infra/vm/vm.env
+
+# Результаты нагрузочных тестов (loadtest/k6.sh)
+loadtest/results/

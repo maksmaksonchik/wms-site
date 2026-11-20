@@ -13,6 +13,11 @@ x-logging: &default-logging
     max-size: "10m"
     max-file: "5"
 
+# Лимиты ресурсов (ВМ: 4 vCPU, 4 ГБ + 1 ГБ swap). Смысл не в экономии, а в том, чтобы
+# перегруженный сервис (например, Next, пережимающий картинки) не отнял CPU и память
+# у остальных, а при нехватке памяти ядро убивало его, а не базу.
+# Числа подобраны с запасом; уточняются по Netdata под нагрузкой (loadtest/README.md)
+
 services:
   strapi-db:
     logging: *default-logging
@@ -20,6 +25,8 @@ services:
     restart: always
     env_file: backend/.env
     image: postgres:17-alpine
+    # Без жёсткого лимита, но OOM killer выберет базу последней
+    oom_score_adj: -500
     volumes:
       - strapi-data:/var/lib/postgresql/data/
 
@@ -33,6 +40,8 @@ services:
     env_file: backend/.env
     depends_on:
       - strapi-db
+    cpus: 2
+    mem_limit: 1g
     volumes:
       - strapi-uploads:/opt/app/public/uploads/
 
@@ -45,6 +54,9 @@ services:
     restart: always
     depends_on:
       - strapi
+    # Node однопоточный, но sharp (картинки) использует несколько ядер
+    cpus: 2
+    mem_limit: 1g
 
   nginx:
     logging: *default-logging
@@ -54,9 +66,17 @@ services:
       dockerfile: Dockerfile
     restart: always
     env_file: .env
+    mem_limit: 256m
+    # Под worker_rlimit_nofile из nginx/nginx-main.conf
+    ulimits:
+      nofile: 65536
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template
       - ./nginx/allowed-ips.conf:/etc/nginx/allowed-ips.conf
+      - ./nginx/limit-exempt.conf:/etc/nginx/limit-exempt.conf:ro
+      # Кэш страниц, статики и картинок (nginx/nginx.conf). Том — чтобы после деплоя
+      # не пережимать все картинки заново
+      - nginx-cache:/var/cache/nginx
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
       - ./nginx/logs:/var/log/nginx
@@ -72,6 +92,7 @@ services:
     container_name: wms_certbot
     image: certbot/certbot:latest
     restart: always
+    mem_limit: 256m
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
@@ -82,6 +103,7 @@ services:
     container_name: wms_fail2ban
     image: crazymax/fail2ban:latest
     restart: always
+    mem_limit: 256m
     volumes:
       - ./fail2ban/jail.local:/etc/fail2ban/jail.local:ro
       # Образ подключает фильтры из /data/filter.d поверх стандартных, а базу банов держит в /data/db
@@ -100,3 +122,4 @@ services:
 volumes:
   strapi-data:
   strapi-uploads:
+  nginx-cache:
