@@ -109,8 +109,10 @@ loadtest/k6.sh limits.js -e FILE=/uploads/Alina_Zyryanova_e345cbe4aa.jpg
 ### 2. Снять лимиты со своего адреса
 
 ```bash
-# свой адрес (с ноутбука, VPN до сайта выключен)
-curl -s https://ifconfig.me; echo
+# Свой адрес — таким, каким его видит сайт. Сервисы вроде ifconfig.me не годятся,
+# если трафик к ним идёт другим маршрутом (например, через другой VPN). Надёжно —
+# прогнать smoke.js и посмотреть адрес в логе на ВМ сайта:
+grep zmsh-loadtest nginx/logs/access.log | tail -1 | cut -d' ' -f1
 
 # на ВМ сайта:
 echo "<ваш IP> 1;" >> nginx/limit-exempt.conf && docker exec wms_nginx nginx -s reload
