@@ -66,7 +66,12 @@ services:
       dockerfile: Dockerfile
     restart: always
     env_file: .env
-    mem_limit: 256m
+    # Сам nginx занимает мало, но в лимит контейнера входят буферы сокетов ядра и page cache
+    # файлов кэша. Когда канал забит (~350 Мбит/с, 200 соединений), неотправленные ответы
+    # копятся в буферах: на тесте 2026-11-20 это ~150 МБ сокетов + ~110 МБ буферов nginx.
+    # При 256m ядро выселяло кэш из памяти, nginx читал его с диска и простаивал (memory
+    # pressure ~40%). 512m — с запасом, на ВМ свободно ~2.9 ГБ
+    mem_limit: 512m
     # Под worker_rlimit_nofile из nginx/nginx-main.conf
     ulimits:
       nofile: 65536

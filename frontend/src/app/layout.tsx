@@ -6,6 +6,10 @@ import { strapi } from "@/services/strapi";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 
+// Все страницы рендерятся на каждый запрос, а не при сборке: данные — из Strapi, которого
+// при сборке образа нет. Кэшируют nginx (микрокэш, nginx/nginx.conf) и src/services/strapi.ts
+export const dynamic = "force-dynamic";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin", "cyrillic"],
