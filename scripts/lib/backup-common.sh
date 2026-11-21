@@ -34,7 +34,7 @@ default_backup_dir() {
 compose_project() {
   local name
   name=$(docker compose config 2>/dev/null | sed -n 's/^name: //p' | head -1)
-  [[ -n $name ]] || die "docker compose config не отработал: нет backend/.env или ошибка в compose-файле"
+  [[ -n $name ]] || die "docker compose config не отработал: нет .env, backend/.env, frontend/.env или ошибка в compose-файле"
   echo "$name"
 }
 

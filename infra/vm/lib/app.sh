@@ -135,6 +135,7 @@ role_app() {
   2. npm run prod:restore -- --secrets ~/<каталог бэкапа>
      (без бэкапа секретов — README.md, «Если секретов нет»)
   3. В nginx/allowed-ips.conf — белый IP VPN-шлюза, иначе админка будет 403
-  4. npm run prod
+  4. npm run prod — скачает образы из ghcr.io (если пакеты wms-site-* приватные,
+     сначала docker login ghcr.io с токеном read:packages)
 EOF
 }
