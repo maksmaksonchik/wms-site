@@ -100,6 +100,48 @@ EOF
   info "Netdata: http://<LAN-адрес этой ВМ>:19999 (через VPN)"
 }
 
+# Автодеплой: таймер раз в 2 минуты запускает scripts/autodeploy.sh от ADMIN_USER.
+# Он сам ходит на GitHub и деплоит новые коммиты main, когда для них собраны образы
+setup_autodeploy() {
+  log "Автодеплой: wms-autodeploy.timer"
+  [[ -f $APP_DIR/scripts/autodeploy.sh ]] || die "Нет $APP_DIR/scripts/autodeploy.sh: обновите код (git pull)"
+  id -nG "$ADMIN_USER" | grep -qw docker \
+    || warn "$ADMIN_USER не в группе docker — автодеплой не сможет работать с контейнерами"
+  cat > /etc/systemd/system/wms-autodeploy.service <<EOF
+# setup.sh: автодеплой из origin/main (scripts/autodeploy.sh).
+# Журнал: journalctl -u wms-autodeploy. Выключить: sudo systemctl disable --now wms-autodeploy.timer
+[Unit]
+Description=Автодеплой сайта ЗМШ из origin/main
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=$ADMIN_USER
+WorkingDirectory=$APP_DIR
+# /var/lib/wms-autodeploy: неудачный коммит, начало ожидания сборки
+StateDirectory=wms-autodeploy
+ExecStart=/usr/bin/bash $APP_DIR/scripts/autodeploy.sh
+TimeoutStartSec=30min
+EOF
+  cat > /etc/systemd/system/wms-autodeploy.timer <<'EOF'
+# setup.sh: проверка новых коммитов раз в 2 минуты
+[Unit]
+Description=Проверка обновлений сайта ЗМШ
+
+[Timer]
+OnCalendar=*:0/2
+AccuracySec=15s
+
+[Install]
+WantedBy=timers.target
+EOF
+  systemctl daemon-reload
+  systemctl enable --now wms-autodeploy.timer >/dev/null
+  info "Журнал: journalctl -u wms-autodeploy -f. Выключить: sudo systemctl disable --now wms-autodeploy.timer"
+}
+
 role_app() {
   log "Docker"
   install_docker
@@ -127,6 +169,8 @@ role_app() {
     sudo -u "$ADMIN_USER" git clone "$REPO_URL" "$APP_DIR"
   fi
   sudo -u "$ADMIN_USER" mkdir -p "$APP_DIR/nginx/logs" "$APP_DIR/fail2ban/db"
+  # Пока сайт не задеплоен через npm run prod, автодеплой ничего не делает
+  setup_autodeploy
 
   cat <<EOF
 
@@ -135,6 +179,8 @@ role_app() {
   2. npm run prod:restore -- --secrets ~/<каталог бэкапа>
      (без бэкапа секретов — README.md, «Если секретов нет»)
   3. В nginx/allowed-ips.conf — белый IP VPN-шлюза, иначе админка будет 403
-  4. npm run prod
+  4. npm run prod — скачает образы из ghcr.io (если пакеты wms-site-* приватные,
+     сначала docker login ghcr.io с токеном read:packages). Дальше новые коммиты
+     main деплоит wms-autodeploy.timer
 EOF
 }

@@ -28,6 +28,10 @@ for arg in "$@"; do
   esac
 done
 [[ -n $SRC ]] || usage
+
+# Та же блокировка, что у scripts/deploy.sh: автодеплой не начнётся посреди восстановления
+exec 9>.deploy.lock
+flock -n 9 || die "Идёт деплой (npm run prod или автодеплой, journalctl -u wms-autodeploy) — подождите"
 [[ -d $SRC ]] || die "Нет каталога $SRC"
 SRC=$(cd "$SRC" && pwd)
 
@@ -86,7 +90,8 @@ if service_running strapi; then
   [[ $FORCE == 1 ]] || die "Strapi запущен — это живой сайт? Восстановить поверх него: --force"
 fi
 
-log "Контейнеры и тома (при первом запуске собираются образы — это долго)"
+# Версия образов — IMAGE_TAG из .env (пишет scripts/deploy.sh), без него latest
+log "Контейнеры и тома (при первом запуске скачиваются образы)"
 # Strapi нельзя запускать до восстановления: на пустой базе он сам создаст схему
 docker compose stop strapi front nginx 2>/dev/null || true
 docker compose up --no-start

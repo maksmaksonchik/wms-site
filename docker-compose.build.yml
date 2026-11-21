@@ -1,0 +1,21 @@
+# Запасной путь: собрать образы на самой ВМ, а не скачивать из GitHub Container Registry.
+# Подключается поверх docker-compose.yml (npm run prod:build-local):
+#   npm run prod:build-local && IMAGE_TAG=local npm run prod
+# Сборка админки Strapi требует ~2.3 ГБ памяти, Next — ~1 ГБ, и всё это пока работает
+# старая версия сайта. На ВМ меньше 4 ГБ сначала остановите сайт (npm run prod:down).
+# Собранный здесь front берёт настройки из frontend/.env, в том числе при сборке
+services:
+  strapi:
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+
+  front:
+    build:
+      context: frontend/
+      dockerfile: Dockerfile
+
+  nginx:
+    build:
+      context: nginx/
+      dockerfile: Dockerfile

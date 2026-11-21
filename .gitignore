@@ -85,3 +85,6 @@ infra/vm/vm.env
 
 # Результаты нагрузочных тестов (loadtest/k6.sh)
 loadtest/results/
+
+# блокировка scripts/deploy.sh (один деплой за раз)
+.deploy.lock

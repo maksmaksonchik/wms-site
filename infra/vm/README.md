@@ -9,6 +9,7 @@
 | `setup.sh app` | ВМ сайта: Docker из официального репозитория, `daemon.json`, ufw, клон репозитория в `/opt/wms-site` |
 | `setup.sh finish` | убирает временное правило SSH с белого IP, которое ставится при первом запуске |
 | `setup.sh backup` | только автоматические бэкапы на уже работающей ВМ, остальное не трогает (см. ниже) |
+| `setup.sh autodeploy` | только автодеплой из `origin/main` на уже работающей ВМ сайта (таймер `wms-autodeploy`, см. [README](../../README.md#последующие-обновления-автодеплой)) |
 | `backup-pull.sh` | на шлюзе: забирает бэкапы с ВМ сайта (ставится `setup.sh vpn`, см. ниже) |
 | `wg-peer.sh` | на шлюзе: `list`, `add`, `rotate`, `remove`, `keep`, `label` для клиентов WireGuard, применяется на лету (см. ниже) |
 | `audit.sh` | только читает: снимок текущей настройки для сверки (ключи WireGuard не печатает) |
@@ -164,6 +165,20 @@ sudo cp -r /var/backups/wms-site/<дата>_<время> ~ && sudo chown -R "$US
 
 Обе ВМ стоят у одного хостера. Для защиты от потери аккаунта или дата-центра время от времени
 забирайте свежую копию к себе на ноутбук.
+
+## Автодеплой (ВМ сайта)
+
+`sudo ./setup.sh app` ставит его сам. На уже работающей ВМ:
+
+```bash
+cd /opt/wms-site && git pull && npm run prod   # первый деплой образов из CI — вручную
+sudo infra/vm/setup.sh autodeploy              # таймер wms-autodeploy, раз в 2 минуты
+journalctl -u wms-autodeploy -f
+```
+
+Таймер запускает `scripts/autodeploy.sh` от `ADMIN_USER` (группа docker). Состояние лежит
+в `/var/lib/wms-autodeploy`. Как он работает и когда стоит на паузе — в
+[README](../../README.md#последующие-обновления-автодеплой).
 
 ## Лимит соединений и Netdata (ВМ сайта)
 
