@@ -28,6 +28,10 @@ for arg in "$@"; do
   esac
 done
 [[ -n $SRC ]] || usage
+
+# Та же блокировка, что у scripts/deploy.sh: автодеплой не начнётся посреди восстановления
+exec 9>.deploy.lock
+flock -n 9 || die "Идёт деплой (npm run prod или автодеплой, journalctl -u wms-autodeploy) — подождите"
 [[ -d $SRC ]] || die "Нет каталога $SRC"
 SRC=$(cd "$SRC" && pwd)
 

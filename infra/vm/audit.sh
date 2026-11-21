@@ -113,6 +113,16 @@ fi
 [[ -f /var/lib/wms-backup-pull/.ssh/authorized_keys ]] && \
   echo "--- ключ шлюза для бэкапов: $(awk '{print $NF}' /var/lib/wms-backup-pull/.ssh/authorized_keys)"
 
+section "Автодеплой"
+if systemctl cat wms-autodeploy.service >/dev/null 2>&1; then
+  run systemctl is-enabled wms-autodeploy.timer
+  run systemctl show -p Result -p ExecMainExitTimestamp wms-autodeploy.service
+  journalctl -u wms-autodeploy.service -n 8 --no-pager -o short-iso 2>&1
+  [[ -f /var/lib/wms-autodeploy/failed ]] && echo "--- не задеплоился: $(cat /var/lib/wms-autodeploy/failed)"
+else
+  echo "не настроен (sudo ./setup.sh autodeploy)"
+fi
+
 section "Обновления и журнал"
 run systemctl is-enabled unattended-upgrades
 run cat /etc/apt/apt.conf.d/20auto-upgrades

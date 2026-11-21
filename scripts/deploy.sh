@@ -5,6 +5,8 @@
 #   IMAGE_TAG=sha-<хэш> npm run prod     # откат или конкретная сборка
 #   npm run prod:pull | prod:up          # отдельные шаги
 #
+# Автодеплой (scripts/autodeploy.sh, таймер wms-autodeploy) вызывает этот же скрипт.
+#
 # Выбранный тег записывается в .env (IMAGE_TAG=…): docker compose читает этот файл сам,
 # поэтому и ручные `docker compose up/restart`, и scripts/restore.sh работают с той же
 # версией, а не с latest.
@@ -17,6 +19,13 @@ warn() { printf '\033[1;33m[!]\033[0m %s\n' "$*" >&2; }
 die()  { printf '\033[1;31m[x]\033[0m %s\n' "$*" >&2; exit 1; }
 
 [[ -f .env ]] || die "Нет .env в корне репозитория (npm run generate:env, см. README)"
+
+# Один деплой за раз: ручной npm run prod, автодеплой и restore.sh берут одну блокировку.
+# Автодеплой держит её сам на всё время работы и передаёт DEPLOY_LOCK_HELD=1
+if [[ -z ${DEPLOY_LOCK_HELD:-} ]]; then
+  exec 9>.deploy.lock
+  flock -n 9 || die "Уже идёт деплой или восстановление (автодеплой: journalctl -u wms-autodeploy)"
+fi
 
 # Тег из окружения важнее записанного в .env: так работает откат
 if [[ -z ${IMAGE_TAG:-} ]]; then
@@ -67,10 +76,26 @@ save_tag() {
   fi
 }
 
+# Тег, записанный в .env, то есть задеплоенный сейчас
+deployed_tag() { sed -n 's/^IMAGE_TAG=//p' .env | tail -1; }
+
 up() {
+  local prev
+  prev=$(deployed_tag)
   log "Запускаю $IMAGE_TAG"
-  docker compose up -d
+  # Без down: compose пересоздаёт только изменившиеся контейнеры. Наши три меняются при
+  # каждом деплое (новый тег), база и certbot продолжают работать, простой — секунды,
+  # а пока перезапускается Next, nginx отдаёт страницы из кэша
+  docker compose up -d --remove-orphans
   save_tag
+  # Изменения смонтированных конфигов compose не замечает. fail2ban перезапускаем всегда
+  # (баны он восстановит из своей базы), nginx — когда версия та же и контейнер не
+  # пересоздавался: например, после правки allowed-ips.conf или nginx.conf на сервере
+  if [[ $prev == "$IMAGE_TAG" ]]; then
+    docker compose restart nginx fail2ban
+  else
+    docker compose restart fail2ban
+  fi
 }
 
 prune() {
@@ -92,7 +117,6 @@ case ${1:-all} in
   all)
     # Сначала скачиваем: если образа нет, старая версия продолжает работать
     pull
-    docker compose down --remove-orphans
     up
     prune
     ;;
