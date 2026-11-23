@@ -38,6 +38,8 @@ services:
     volumes:
       - netdata-config:/etc/netdata
       - ./netdata/go.d/nginx.conf:/etc/netdata/go.d/nginx.conf:ro
+      # Сроки хранения метрик (до ~4 ГБ на диске, см. сам файл)
+      - ./netdata/netdata.conf:/etc/netdata/netdata.conf:ro
       # Дашборд нагрузочного теста: http://<ВМ>:19999/loadtest.html
       - ./netdata/web/loadtest.html:/usr/share/netdata/web/loadtest.html:ro
       - netdata-lib:/var/lib/netdata

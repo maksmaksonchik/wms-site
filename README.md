@@ -225,6 +225,11 @@ rm /var/lib/wms-autodeploy/failed                    # попробовать н
 
 Мониторинг — Netdata: `npm run monitoring:up`, `http://192.168.0.1:19999` через VPN;
 графики для нагрузочного теста — `http://192.168.0.1:19999/loadtest.html`.
+Netdata — отдельный compose-проект (`docker-compose-monitoring.yml`), и автодеплой его
+не трогает: после изменений в `docker-compose-monitoring.yml` или `netdata/` выполните на
+сервере `npm run monitoring:up` вручную, иначе Netdata продолжит работать со старыми
+лимитами и настройками. Метрики хранятся до 4 месяцев поминутно и до 2 лет почасово,
+на диске — не больше ~4 ГБ (`netdata/netdata.conf`).
 Нагрузочные тесты — [`loadtest/README.md`](loadtest/README.md).
 
 ## Бэкап и восстановление
