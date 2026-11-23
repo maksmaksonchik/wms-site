@@ -217,7 +217,7 @@ awk '{for (i = NF; i > 0; i--) if ($i ~ /^rt=/) {print substr($i, 4), $9, $7; br
 | Что | График | Норма | Тревога и что значит |
 |---|---|---|---|
 | CPU контейнеров | `cgroup.cpu` (100% = 1 ядро) | `wms_front` и `wms_strapi` низко, пока работает кэш | ~100% у `wms_front` — Node упёрся в своё единственное ядро: это и есть потолок рендера. То же у `wms_strapi` — упёрся Strapi |
-| Упор в лимит `cpus` | `cgroup.throttled` | около 0 | заметно больше 0 у `wms_front` — контейнеру мало `cpus: 2` (обычно sharp на холодном кэше картинок) |
+| Упор в лимит `cpus` | `cgroup.throttled` | около 0 | заметно больше 0 у `wms_front` — контейнеру мало его `cpus` из `docker-compose.yml` (обычно sharp на холодном кэше картинок) |
 | CPU всей ВМ | `system.cpu`, измерения `steal` и `iowait` | `steal` и `iowait` — единицы процентов | `steal` > 10% — CPU отъедают соседи по физическому серверу NetAngels, результаты теста шумные. `iowait` — ждём диск |
 | Память контейнеров | `cgroup.mem_utilization` (% от `mem_limit`) | до 70% | > 90% у `wms_front` или `wms_strapi` — скоро OOM kill контейнера |
 | Память ВМ | `mem.available`, `mem.swap` | свободно сотни МБ, swap не растёт | < 300 МБ и растёт swap — памяти не хватает всей ВМ |
