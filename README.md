@@ -230,6 +230,8 @@ Netdata — отдельный compose-проект (`docker-compose-monitoring.
 сервере `npm run monitoring:up` вручную, иначе Netdata продолжит работать со старыми
 лимитами и настройками. Метрики хранятся до 4 месяцев поминутно и до 2 лет почасово,
 на диске — не больше ~4 ГБ (`netdata/netdata.conf`).
+Логи nginx (`nginx/logs/`) хранятся ~4 месяца (`rotate 120` в `nginx/logrotate.conf`) —
+по ним считаются посетители за сезон. Ротация зашита в образ nginx, применяется деплоем.
 Нагрузочные тесты — [`loadtest/README.md`](loadtest/README.md).
 
 ## Бэкап и восстановление
