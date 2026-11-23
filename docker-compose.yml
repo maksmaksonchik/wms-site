@@ -19,12 +19,17 @@ x-logging: &default-logging
 # и записывает тег в .env (IMAGE_TAG) — его же видят ручные docker compose и restore.sh.
 # Откат: IMAGE_TAG=sha-<старый хэш> npm run prod. Без IMAGE_TAG в .env — latest
 # (последняя сборка main). Собрать на самой ВМ (если GitHub недоступен; нужно ~3.5 ГБ
-# памяти вместе с сайтом) — npm run prod:build-local, см. docker-compose.build.yml
+# памяти, на ВМ с 2 ГБ — только с остановленным сайтом и swap) — npm run prod:build-local,
+# см. docker-compose.build.yml
 
-# Лимиты ресурсов (ВМ: 4 vCPU, 4 ГБ + 1 ГБ swap). Смысл не в экономии, а в том, чтобы
-# перегруженный сервис (например, Next, пережимающий картинки) не отнял CPU и память
+# Лимиты ресурсов рассчитаны на ВМ 2 vCPU / 2 ГБ + 1 ГБ swap. Смысл не в экономии, а в том,
+# чтобы перегруженный сервис (например, Next, пережимающий картинки) не отнял CPU и память
 # у остальных, а при нехватке памяти ядро убивало его, а не базу.
-# Числа подобраны с запасом; уточняются по Netdata под нагрузкой (loadtest/README.md)
+# Лимит — потолок, а не резерв: сумма лимитов (~2.4 ГБ) больше памяти ВМ, но все сервисы
+# сразу до потолков не доходят. Пики по Netdata (нагрузочные тесты 2026-11-20 и 2026-11-23
+# на 4 vCPU / 4 ГБ): front 274 МБ, strapi 246, nginx 325, Netdata 245, база 58,
+# fail2ban 33, certbot 60; на всей ВМ занято не больше ~1.5 ГБ (вместе с ядром и Docker).
+# Уточняются по Netdata под нагрузкой (loadtest/README.md)
 
 services:
   strapi-db:
@@ -46,8 +51,10 @@ services:
     env_file: backend/.env
     depends_on:
       - strapi-db
-    cpus: 2
-    mem_limit: 1g
+    # Под нагрузкой Strapi почти не работает (Next кэширует его ответы), пик 246 МБ.
+    # Запас — на загрузку картинок в админке: sharp режет оригиналы до 11 МБ на форматы
+    cpus: 1.5
+    mem_limit: 768m
     volumes:
       - strapi-uploads:/opt/app/public/uploads/
 
@@ -61,9 +68,11 @@ services:
     env_file: frontend/.env
     depends_on:
       - strapi
-    # Node однопоточный, но sharp (картинки) использует несколько ядер
-    cpus: 2
-    mem_limit: 1g
+    # Node однопоточный, но sharp (картинки) и сборщик мусора используют ещё ядра: на тесте
+    # мимо кэша front занимал ~1.5 ядра. 1.5 из 2 — чтобы nginx оставалось ядро на TLS
+    # и отдачу кэша, пока Next перегружен. Пик памяти 274 МБ
+    cpus: 1.5
+    mem_limit: 512m
 
   nginx:
     logging: *default-logging
@@ -75,8 +84,10 @@ services:
     # файлов кэша. Когда канал забит (~350 Мбит/с, 200 соединений), неотправленные ответы
     # копятся в буферах: на тесте 2026-11-20 это ~150 МБ сокетов + ~110 МБ буферов nginx.
     # При 256m ядро выселяло кэш из памяти, nginx читал его с диска и простаивал (memory
-    # pressure ~40%). 512m — с запасом, на ВМ свободно ~2.9 ГБ
-    mem_limit: 512m
+    # pressure ~40%). С 512m пик 2026-11-23 — 325 МБ, из них ~130 МБ — горячий кэш (ядро
+    # освобождает его первым). 384m: буферы помещаются, и для кэша остаётся ~190 МБ.
+    # Если на 2 ГБ при забитом канале растёт memory pressure у wms_nginx — поднять
+    mem_limit: 384m
     # Под worker_rlimit_nofile из nginx/nginx-main.conf
     ulimits:
       nofile: 65536
@@ -102,7 +113,7 @@ services:
     container_name: wms_certbot
     image: certbot/certbot:latest
     restart: always
-    mem_limit: 256m
+    mem_limit: 128m
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
@@ -113,7 +124,7 @@ services:
     container_name: wms_fail2ban
     image: crazymax/fail2ban:latest
     restart: always
-    mem_limit: 256m
+    mem_limit: 128m
     volumes:
       - ./fail2ban/jail.local:/etc/fail2ban/jail.local:ro
       # Образ подключает фильтры из /data/filter.d поверх стандартных, а базу банов держит в /data/db

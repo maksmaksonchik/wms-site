@@ -190,6 +190,8 @@ rm /var/lib/wms-autodeploy/failed                    # попробовать н
 - **GitHub или GHCR недоступны:** `npm run prod:build-local && IMAGE_TAG=local npm run prod`.
   Образы собираются на сервере (`docker-compose.build.yml`), нужно ~3.5 ГБ памяти вместе
   с работающим сайтом, поэтому на ВМ меньше 4 ГБ сначала выполните `npm run prod:down`.
+  На ВМ с 2 ГБ сборка админки Strapi (~2.3 ГБ) влезает только за счёт swap, и то не
+  наверняка: это не проверялось.
   Вернуться к образам из CI можно обычным `npm run prod`.
 
 ## Нагрузка и защита

@@ -23,7 +23,10 @@ services:
       - SYS_ADMIN
     security_opt:
       - apparmor:unconfined
-    mem_limit: 512m
+    # Пик 245 МБ, из них ~185 МБ своя память, остальное — кэш файлов базы метрик.
+    # На ВМ с 2 ГБ Netdata — самый большой необязательный потребитель: вне тестов
+    # его можно остановить (npm run monitoring:down), история сохранится в томе
+    mem_limit: 320m
     environment:
       # Без телеметрии и без Netdata Cloud: агент не привязан к облаку, данные не уходят
       - DO_NOT_TRACK=1
