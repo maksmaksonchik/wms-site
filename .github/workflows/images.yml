@@ -1,0 +1,92 @@
+# Сборка Docker-образов сайта и публикация в GitHub Container Registry (ghcr.io).
+# ВМ образы не собирает, а скачивает готовые (npm run prod): сборка админки Strapi
+# требует ~2.3 ГБ памяти, и на маленькой ВМ работающий сайт с ней не помещается.
+#
+# Теги каждого образа:
+#   sha-<полный хэш коммита> — по нему npm run prod скачивает версию, совпадающую с git;
+#   latest                   — последняя сборка main.
+# В PR образы только собираются (проверка, что сборка не сломана), без публикации.
+name: images
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# Сборки одной ветки идут по очереди, иначе более старая могла бы закончиться последней
+# и перезаписать latest. Идущую сборку main не прерываем. Но в очереди GitHub держит
+# только одну: если за время сборки в main пришло несколько коммитов, промежуточные
+# пропускаются (статус cancelled) и тега sha-… у них нет. Для деплоя важен последний;
+# нужен промежуточный (откат на него) — Re-run jobs у отменённого запуска
+concurrency:
+  group: images-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: front
+            context: frontend
+            # Значения прода. NEXT_PUBLIC_ASSETS_BASE_URL вшивается в код для браузера,
+            # поэтому должен совпадать с NEXT_PUBLIC_ASSETS_BASE_URL во frontend/.env на ВМ.
+            # Другой домен — переменная репозитория NEXT_PUBLIC_ASSETS_BASE_URL
+            # (Settings → Secrets and variables → Actions → Variables)
+            build-args: |
+              NEXT_PUBLIC_ASSETS_BASE_URL=${{ vars.NEXT_PUBLIC_ASSETS_BASE_URL || 'https://zmsh.space' }}
+              ASSETS_PATHNAME=/uploads/**
+              ASSETS_DEV_MODE=false
+              API_BASE_URL=http://strapi:1337/api
+          - image: strapi
+            context: backend
+            build-args: ""
+          - image: nginx
+            context: nginx
+            build-args: ""
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Имя образа
+        id: name
+        # В ghcr.io имя только строчными буквами
+        run: echo "image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/wms-site-${{ matrix.image }}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/login-action@v4
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ steps.name.outputs.image }}
+          tags: |
+            type=sha,format=long
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.context }}
+          pull: true
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ matrix.build-args }}
+          platforms: linux/amd64
+          # Кэш слоёв в GitHub Actions: без изменений в package-lock.json npm ci не повторяется.
+          # PR только читает кэш (у PR из форков нет прав на запись)
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: ${{ github.event_name != 'pull_request' && format('type=gha,scope={0},mode=max', matrix.image) || '' }}

@@ -13,6 +13,14 @@ x-logging: &default-logging
     max-size: "10m"
     max-file: "5"
 
+# Образы strapi, front и nginx собирает GitHub Actions (.github/workflows/images.yml),
+# ВМ их только скачивает. Тег — sha-<хэш коммита>: npm run prod (scripts/deploy.sh) берёт
+# хэш текущего git HEAD, так что код в образах совпадает с конфигами из этого же коммита,
+# и записывает тег в .env (IMAGE_TAG) — его же видят ручные docker compose и restore.sh.
+# Откат: IMAGE_TAG=sha-<старый хэш> npm run prod. Без IMAGE_TAG в .env — latest
+# (последняя сборка main). Собрать на самой ВМ (если GitHub недоступен; нужно ~3.5 ГБ
+# памяти вместе с сайтом) — npm run prod:build-local, см. docker-compose.build.yml
+
 # Лимиты ресурсов (ВМ: 4 vCPU, 4 ГБ + 1 ГБ swap). Смысл не в экономии, а в том, чтобы
 # перегруженный сервис (например, Next, пережимающий картинки) не отнял CPU и память
 # у остальных, а при нехватке памяти ядро убивало его, а не базу.
@@ -33,9 +41,7 @@ services:
   strapi:
     logging: *default-logging
     container_name: wms_strapi
-    build:
-      context: backend/
-      dockerfile: Dockerfile
+    image: ${IMAGE_REGISTRY:-ghcr.io/maksmaksonchik}/wms-site-strapi:${IMAGE_TAG:-latest}
     restart: always
     env_file: backend/.env
     depends_on:
@@ -48,10 +54,11 @@ services:
   front:
     logging: *default-logging
     container_name: wms_front
-    build:
-      context: frontend/
-      dockerfile: Dockerfile
+    image: ${IMAGE_REGISTRY:-ghcr.io/maksmaksonchik}/wms-site-front:${IMAGE_TAG:-latest}
     restart: always
+    # Образ из CI собран без .env, настройки — отсюда. NEXT_PUBLIC_ASSETS_BASE_URL уже вшит
+    # в код для браузера при сборке и должен совпадать со значением в workflow
+    env_file: frontend/.env
     depends_on:
       - strapi
     # Node однопоточный, но sharp (картинки) использует несколько ядер
@@ -61,9 +68,7 @@ services:
   nginx:
     logging: *default-logging
     container_name: wms_nginx
-    build:
-      context: nginx/
-      dockerfile: Dockerfile
+    image: ${IMAGE_REGISTRY:-ghcr.io/maksmaksonchik}/wms-site-nginx:${IMAGE_TAG:-latest}
     restart: always
     env_file: .env
     # Сам nginx занимает мало, но в лимит контейнера входят буферы сокетов ядра и page cache
